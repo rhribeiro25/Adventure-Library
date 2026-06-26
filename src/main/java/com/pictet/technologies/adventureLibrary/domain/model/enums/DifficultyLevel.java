@@ -1,6 +1,6 @@
 package com.pictet.technologies.adventureLibrary.domain.model.enums;
 
-public enum Difficulty {
+public enum DifficultyLevel {
     EASY,
     MEDIUM,
     HARD
