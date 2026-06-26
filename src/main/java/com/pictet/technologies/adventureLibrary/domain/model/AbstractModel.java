@@ -1,4 +1,4 @@
-package br.com.rhribeiro25.virtual_card_platform.domain.model;
+package com.pictet.technologies.adventureLibrary.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
