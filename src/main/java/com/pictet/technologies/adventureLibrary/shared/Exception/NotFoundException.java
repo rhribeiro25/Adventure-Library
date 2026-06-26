@@ -1,0 +1,10 @@
+package com.pictet.technologies.adventureLibrary.shared.Exception;
+
+import com.pictet.technologies.adventureLibrary.shared.Exception.BusinessException;
+import org.springframework.http.HttpStatus;
+
+public class NotFoundException extends BusinessException {
+    public NotFoundException(String message) {
+        super(message, HttpStatus.NOT_FOUND);
+    }
+}
