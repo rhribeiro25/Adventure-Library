@@ -1,0 +1,67 @@
+@startuml
+actor user as "Angular App"
+
+box "API Layer" #LightBlue
+participant "GameController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "NavigateGameUseCase" as usecase <<(C,#ADD1B2)>>
+participant "NavigationEngine" as navigation <<(C,#ADD1B2)>>
+participant "ConsequenceEngine" as consequence <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "GameRepository" as gameRepo <<(C,#ADD1B2)>>
+participant "SectionRepository" as sectionRepo <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+
+note right user
+POST /api/v1/games/{gameId}/choices
+body: { "optionId": 20 }
+end note
+user -> controller
+controller -> usecase : chooseOption(gameId, optionId)
+
+usecase -> gameRepo : findGame(gameId)
+gameRepo -> db : SELECT game
+db --> gameRepo : GameEntity
+gameRepo --> usecase : Game
+
+usecase -> navigation : validateSelectedOption(game, optionId)
+navigation --> usecase : Option
+
+usecase -> consequence : apply(game, option.consequence)
+consequence -> consequence : health = health - value
+consequence --> usecase : Game with updated health
+
+usecase -> sectionRepo : findTargetSection(bookId, gotoId)
+sectionRepo -> db : SELECT section
+db --> sectionRepo : SectionEntity
+sectionRepo --> usecase : Section
+
+alt health > 10
+    usecase -> gameRepo : updateStatus(gameId, WON)
+    gameRepo -> db : UPDATE game SET status=LOST, health=0
+    db --> gameRepo : updated
+    gameRepo -> usecase : Game
+    usecase --> controller : GameResponse status=WON
+else health > 0 & health < 10
+    usecase -> gameRepo : updateStatus(gameId, PLAYING)
+    gameRepo -> db : UPDATE game SET health, current_section
+    db --> gameRepo : updated
+    gameRepo -> usecase : Game
+    usecase --> controller : GameResponse status=PLAYING
+else health <= 0
+    usecase -> gameRepo : updateStatus(gameId, LOST)
+    gameRepo -> db : UPDATE game SET status=LOST, health=0
+    db --> gameRepo : updated
+    gameRepo -> usecase : Game
+    usecase --> controller : GameResponse status=LOST
+end
+
+controller --> user : 200 OK
+
+@enduml

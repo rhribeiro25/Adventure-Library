@@ -1,0 +1,65 @@
+@startuml
+actor user as "Angular App"
+
+box "API Layer" #LightBlue
+participant "BookController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "AddBookUseCase" as usecase <<(C,#ADD1B2)>>
+participant "BookValidator" as validator <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "BookPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
+participant "BookRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+
+note right user
+POST /api/v1/books
+body: {
+        "title": "The Prisoner",
+        "author": "Daniel El Fuego",
+        "difficulty": "HARD",
+        "sections": [
+          {
+            "id": 1,
+            "text": "You wake up in ...",
+            "type": "BEGIN",
+            "options": [
+              {
+                "description": "You try to open the door",
+                "gotoId": 500
+              }
+            ]
+          }
+        ]
+      }
+end note
+user -> controller
+controller -> usecase : addBook(bookJsonRequest)
+
+usecase -> usecase : parse JSON into Book model
+usecase -> validator : validate(book)
+
+group Validation rules
+    validator -> validator : exactly one BEGIN
+    validator -> validator : at least one END
+    validator -> validator : all gotoId exist
+    validator -> validator : non-END sections have options
+end
+
+validator --> usecase : valid book
+
+usecase -> adapter : save(book)
+adapter -> repository : save(BookEntity)
+repository -> db : INSERT book, sections, options, consequences
+db --> repository : saved
+repository --> adapter : BookEntity
+adapter --> usecase : Book
+
+usecase --> controller : BookDetailsResponse
+controller --> user : 201 Created
+@enduml

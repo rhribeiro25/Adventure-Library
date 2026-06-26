@@ -1,0 +1,43 @@
+@startuml
+actor user as "Angular App"
+
+box "API Layer" #LightBlue
+participant "GameController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "StartGameUseCase" as usecase <<(C,#ADD1B2)>>
+participant "BookValidator" as validator <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "BookRepository" as bookRepo <<(C,#ADD1B2)>>
+participant "GameRepository" as gameRepo <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+
+note right user
+POST /api/v1/books/{bookId}/games
+body: { "playerName": "Renan Ribeiro" }
+end note
+user -> controller
+controller -> usecase : startGame(bookId, playerName)
+
+usecase -> bookRepo : findBookWithSections(bookId)
+bookRepo -> db : SELECT book, sections, options
+db --> bookRepo : BookEntity
+bookRepo --> usecase : Book
+
+usecase -> validator : validate(book)
+validator --> usecase : valid
+
+usecase -> usecase : find BEGIN section
+usecase -> gameRepo : save(Game health=10, status=PLAYING)
+gameRepo -> db : INSERT game
+db --> gameRepo : GameEntity
+gameRepo -> usecase : Game
+
+usecase --> controller : GameResponse
+controller --> user : 201 Created
+@enduml

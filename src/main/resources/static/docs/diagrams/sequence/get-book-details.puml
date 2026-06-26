@@ -1,0 +1,29 @@
+@startuml
+actor user as "Angular App"
+
+box "API Layer" #LightBlue
+participant "BookController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "BookUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "BookRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+
+note right user
+GET /api/v1/books/{bookId}
+end note
+user -> controller
+controller -> usecase : getBookDetails(bookId)
+usecase -> repository : findById(bookId)
+repository -> db : SELECT book, categories
+db --> repository : BookEntity
+repository --> usecase : Book
+usecase --> controller : BookDetailsResponse
+controller --> user : 200 OK
+@enduml
