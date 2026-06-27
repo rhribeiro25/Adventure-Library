@@ -23,7 +23,7 @@ public class BookPersistenceAdapter implements BookPersistencePort {
 
     @Override
     public Page<Book> searchBooks(BookSearchFilter filter, Pageable pageable) {
-        BookEntityDifficultyLevel entityDifficultyLevel = difficultyLevelEntityMapper.toEntity(filter.getDifficultyLevel());
+        BookEntityDifficultyLevel entityDifficultyLevel = difficultyLevelEntityMapper.toEntity(filter.getDifficulty());
         return repository.findAll(BookSpecification.from(filter, entityDifficultyLevel), pageable).map(bookEntityMapper::toDomain);
     }
 }

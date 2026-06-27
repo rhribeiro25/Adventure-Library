@@ -20,7 +20,7 @@ public class ConsequenceEntity extends AbstractEntity {
 
     private Integer value;
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)

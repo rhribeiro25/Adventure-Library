@@ -12,6 +12,6 @@ public class BookSearchFilter {
 
     private String query;
     private String author;
-    private DifficultyLevel difficultyLevel;
+    private DifficultyLevel difficulty;
     private String category;
 }

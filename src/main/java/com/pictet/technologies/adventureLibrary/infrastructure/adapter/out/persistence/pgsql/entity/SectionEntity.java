@@ -22,8 +22,7 @@ public class SectionEntity extends AbstractEntity {
     @Column(name = "section_number", nullable = false)
     private Long sectionNumber;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
     @Enumerated(EnumType.STRING)
