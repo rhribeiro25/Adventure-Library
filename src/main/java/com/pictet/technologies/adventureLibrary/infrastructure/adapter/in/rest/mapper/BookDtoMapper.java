@@ -1,6 +1,7 @@
 package com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.mapper;
 
 import com.pictet.technologies.adventureLibrary.domain.model.Book;
+import com.pictet.technologies.adventureLibrary.domain.model.Category;
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookSummaryResponse;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ public class BookDtoMapper {
                 .categories(
                         book.getCategories()
                                 .stream()
-                                .map(category -> category.getName())
+                                .map(Category::getName)
                                 .toList()
                 )
                 .build();
