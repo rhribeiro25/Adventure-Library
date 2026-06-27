@@ -3,19 +3,16 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.pers
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.persistence.pgsql.entity.enums.ConsequenceEntityType;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "consequences")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsequenceEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ConsequenceEntity extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

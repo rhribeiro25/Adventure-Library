@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventureLibrary.shared.Exception;
+package com.pictet.technologies.adventureLibrary.domain.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -2,19 +2,16 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.pers
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "categories")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CategoryEntity extends AbstractEntity {
 
     @Column(nullable = false, unique = true)
     private String name;

@@ -3,6 +3,7 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.pers
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.persistence.pgsql.entity.enums.BookEntityDifficultyLevel;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +12,10 @@ import java.util.List;
 @Table(name = "books")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class BookEntity extends AbstractEntity {
 
     @Column(nullable = false)
     private String title;
@@ -28,7 +25,7 @@ public class BookEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookEntityDifficultyLevel difficulty;
+    private BookEntityDifficultyLevel difficultyLevel;
 
     @Builder.Default
     @ManyToMany
