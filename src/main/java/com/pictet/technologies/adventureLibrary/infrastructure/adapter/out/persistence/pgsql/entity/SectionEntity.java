@@ -3,37 +3,26 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.pers
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.persistence.pgsql.entity.enums.SectionEntityType;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "sections",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_book_section_number", columnNames = {"book_id", "section_number"})
-        }
-)
+@Table(name = "sections", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_book_section_number", columnNames = {"book_id", "section_number"})
+})
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SectionEntity {
+public class SectionEntity extends AbstractEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    /**
-     * This is the section id from the JSON book.
-     * Example: 1, 20, 30, 500.
-     */
     @Column(name = "section_number", nullable = false)
     private Long sectionNumber;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String text;
 
     @Enumerated(EnumType.STRING)

@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventureLibrary.shared.Exception;
+package com.pictet.technologies.adventureLibrary.domain.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

@@ -2,26 +2,20 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.pers
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "options")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OptionEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class OptionEntity extends AbstractEntity {
 
     @Column(nullable = false)
     private String description;
 
-    /**
-     * Target section number from the JSON book.
-     */
     @Column(name = "goto_section_number", nullable = false)
     private Long gotoSectionNumber;
 

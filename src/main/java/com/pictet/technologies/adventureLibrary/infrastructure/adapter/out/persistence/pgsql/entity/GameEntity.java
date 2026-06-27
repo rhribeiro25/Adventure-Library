@@ -3,6 +3,7 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.pers
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.out.persistence.pgsql.entity.enums.GameEntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -10,14 +11,10 @@ import java.time.LocalDateTime;
 @Table(name = "games")
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class GameEntity extends AbstractEntity {
 
     @Column(name = "player_name", nullable = false)
     private String playerName;
