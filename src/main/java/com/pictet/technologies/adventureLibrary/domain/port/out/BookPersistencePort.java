@@ -12,4 +12,8 @@ public interface BookPersistencePort {
             Pageable pageable
     );
 
+    Book save(Book book);
+
+    boolean existsByTitleAndAuthor(String title, String author);
+
 }

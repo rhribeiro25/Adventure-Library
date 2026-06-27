@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface BookJpaRepository extends JpaRepository<BookEntity, Long>, JpaSpecificationExecutor<BookEntity> {
 
+    boolean existsByTitleIgnoreCaseAndAuthorIgnoreCase(String title, String author);
+
 }

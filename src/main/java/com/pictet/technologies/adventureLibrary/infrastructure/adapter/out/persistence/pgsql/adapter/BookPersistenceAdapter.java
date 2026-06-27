@@ -26,4 +26,16 @@ public class BookPersistenceAdapter implements BookPersistencePort {
         BookEntityDifficultyLevel entityDifficultyLevel = difficultyLevelEntityMapper.toEntity(filter.getDifficulty());
         return repository.findAll(BookSpecification.from(filter, entityDifficultyLevel), pageable).map(bookEntityMapper::toDomain);
     }
+
+    @Override
+    public boolean existsByTitleAndAuthor(String title, String author) {
+        return repository.existsByTitleIgnoreCaseAndAuthorIgnoreCase(title, author);
+    }
+
+    @Override
+    public Book save(Book book) {
+        var entity = bookEntityMapper.toEntity(book);
+        var saved = repository.save(entity);
+        return bookEntityMapper.toDomain(saved);
+    }
 }

@@ -6,7 +6,7 @@ import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.d
 import org.springframework.stereotype.Component;
 
 @Component
-public class BookDtoMapper {
+public class BookResponseMapper {
 
     public BookSummaryResponse toSummaryResponse(Book book) {
 
