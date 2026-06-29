@@ -37,4 +37,12 @@ public class BookPersistenceAdapter implements BookPersistencePort {
         return repository.findById(bookId)
                 .map(bookEntityMapper::toDomain);
     }
+
+    @Override
+    @Transactional
+    public Book save(Book book) {
+        var entity = bookEntityMapper.toEntity(book);
+        var saved = repository.save(entity);
+        return bookEntityMapper.toDomain(saved);
+    }
 }

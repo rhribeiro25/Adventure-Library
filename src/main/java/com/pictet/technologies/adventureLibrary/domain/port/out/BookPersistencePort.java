@@ -9,11 +9,10 @@ import java.util.Optional;
 
 public interface BookPersistencePort {
 
-    Page<Book> searchBooks(
-            BookSearchFilter filter,
-            Pageable pageable
-    );
+    Page<Book> searchBooks(BookSearchFilter filter, Pageable pageable);
 
     Optional<Book> findDetailsById(Long bookId);
+
+    Book save(Book book);
 
 }

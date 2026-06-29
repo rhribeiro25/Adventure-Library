@@ -3,7 +3,7 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record CategoryRequest(
+public record SaveCategoryRequest(
         @NotBlank(message = "Category name is required.")
         @Size(max = 255)
         String name

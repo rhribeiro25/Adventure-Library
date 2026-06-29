@@ -9,4 +9,6 @@ public interface CategoryPersistencePort {
     Optional<Category> findByNameIgnoreCase(String name);
 
     Category save(Category category);
+
+    Optional<Category> findById(Long categoryId);
 }

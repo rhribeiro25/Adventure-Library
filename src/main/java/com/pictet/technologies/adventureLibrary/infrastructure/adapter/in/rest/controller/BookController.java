@@ -2,11 +2,9 @@ package com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.
 
 import com.pictet.technologies.adventureLibrary.application.usecase.GetBookDetailsUseCase;
 import com.pictet.technologies.adventureLibrary.application.usecase.SearchBooksUseCase;
+import com.pictet.technologies.adventureLibrary.application.usecase.UpdateBookUseCase;
 import com.pictet.technologies.adventureLibrary.domain.model.enums.DifficultyLevel;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookDetailsResponse;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookSearchFilter;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookSummaryResponse;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.CategoryResponse;
+import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.*;
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.pagination.BookPageableFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -29,8 +28,9 @@ public class BookController {
     private static final int MAX_PAGE_SIZE = 100;
 
     private final SearchBooksUseCase searchBooksUseCase;
-    private final GetBookDetailsUseCase getBookDetailsUseCase;
     private final BookPageableFactory pageableFactory;
+    private final GetBookDetailsUseCase getBookDetailsUseCase;
+    private final UpdateBookUseCase updateBookUseCase;
 
     @GetMapping
     @Operation(
@@ -118,5 +118,34 @@ public class BookController {
         log.info("Getting book details. bookId={}", bookId);
 
         return getBookDetailsUseCase.execute(bookId);
+    }
+
+    @PatchMapping("/{bookId}")
+    @Operation(
+            summary = "Update book",
+            description = "Partially updates book title, author, difficulty and category."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = CategoryResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not Found"
+    )
+    public BookDetailsResponse updateBook(
+            @Parameter(description = "Book id", required = true)
+            @PathVariable Long bookId,
+
+            @Valid @RequestBody UpdateBookRequest request) {
+
+        log.info("Updating book. bookId={}", bookId);
+
+        return updateBookUseCase.execute(bookId, request);
     }
 }

@@ -1,7 +1,7 @@
 package com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.controller;
 
 import com.pictet.technologies.adventureLibrary.application.usecase.CreateCategoryUseCase;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.CategoryRequest;
+import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.SaveCategoryRequest;
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.CategoryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,7 +48,7 @@ public class CategoryController {
             description = "Category already exists"
     )
     public ResponseEntity<CategoryResponse> createCategory(
-            @Valid @RequestBody CategoryRequest request) {
+            @Valid @RequestBody SaveCategoryRequest request) {
 
         log.info("Creating category '{}'", request.name());
 

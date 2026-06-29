@@ -28,4 +28,7 @@ public interface BookJpaRepository extends JpaRepository<BookEntity, Long>, JpaS
             "sections.options"
     })
     Optional<BookEntity> findById(Long id);
+
+    @EntityGraph(attributePaths = {"categories"})
+    Optional<BookEntity> findWithCategoriesById(Long id);
 }
