@@ -41,11 +41,13 @@ public class CategoryController {
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid request"
+            description = "Invalid request",
+            content = @Content
     )
     @ApiResponse(
             responseCode = "409",
-            description = "Category already exists"
+            description = "Category already exists",
+            content = @Content
     )
     public ResponseEntity<CategoryResponse> createCategory(
             @Valid @RequestBody SaveCategoryRequest request) {

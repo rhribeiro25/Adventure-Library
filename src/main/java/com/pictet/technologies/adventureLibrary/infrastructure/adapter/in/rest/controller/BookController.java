@@ -40,11 +40,12 @@ public class BookController {
     @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content(schema = @Schema(implementation = CategoryResponse.class))
+            content = @Content(schema = @Schema(implementation = BookDetailsResponse.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid request"
+            description = "Invalid request",
+            content = @Content
     )
     public Page<BookSummaryResponse> searchBooks(
             @Parameter(description = "Search by title or author")
@@ -101,15 +102,17 @@ public class BookController {
     @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content(schema = @Schema(implementation = CategoryResponse.class))
+            content = @Content(schema = @Schema(implementation = BookDetailsResponse.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid request"
+            description = "Invalid request",
+            content = @Content
     )
     @ApiResponse(
             responseCode = "404",
-            description = "Not Found"
+            description = "Not Found",
+            content = @Content
     )
     public BookDetailsResponse getBookDetails(
             @Parameter(description = "Book id", required = true)
@@ -128,15 +131,17 @@ public class BookController {
     @ApiResponse(
             responseCode = "200",
             description = "OK",
-            content = @Content(schema = @Schema(implementation = CategoryResponse.class))
+            content = @Content(schema = @Schema(implementation = BookDetailsResponse.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid request"
+            description = "Invalid request",
+            content = @Content
     )
     @ApiResponse(
             responseCode = "404",
-            description = "Not Found"
+            description = "Not Found",
+            content = @Content
     )
     public BookDetailsResponse updateBook(
             @Parameter(description = "Book id", required = true)
