@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Optional;
+
 public interface BookJpaRepository extends JpaRepository<BookEntity, Long>, JpaSpecificationExecutor<BookEntity> {
 
     @Override
@@ -18,4 +20,12 @@ public interface BookJpaRepository extends JpaRepository<BookEntity, Long>, JpaS
             "sections.options"
     })
     Page<BookEntity> findAll(@NonNull Specification<BookEntity> specification, @NonNull Pageable pageable);
+
+
+    @EntityGraph(attributePaths = {
+            "categories",
+            "sections",
+            "sections.options"
+    })
+    Optional<BookEntity> findById(Long id);
 }

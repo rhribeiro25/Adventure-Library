@@ -1,12 +1,18 @@
 package com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.controller;
 
+import com.pictet.technologies.adventureLibrary.application.usecase.GetBookDetailsUseCase;
 import com.pictet.technologies.adventureLibrary.application.usecase.SearchBooksUseCase;
 import com.pictet.technologies.adventureLibrary.domain.model.enums.DifficultyLevel;
+import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookDetailsResponse;
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookSearchFilter;
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.BookSummaryResponse;
+import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.CategoryResponse;
 import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.pagination.BookPageableFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +29,22 @@ public class BookController {
     private static final int MAX_PAGE_SIZE = 100;
 
     private final SearchBooksUseCase searchBooksUseCase;
+    private final GetBookDetailsUseCase getBookDetailsUseCase;
     private final BookPageableFactory pageableFactory;
 
     @GetMapping
     @Operation(
             summary = "Search books",
             description = "Lists books with optional filters by title/author query, author, difficulty and category."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = CategoryResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request"
     )
     public Page<BookSummaryResponse> searchBooks(
             @Parameter(description = "Search by title or author")
@@ -49,7 +65,7 @@ public class BookController {
             @Parameter(description = "Page size")
             @RequestParam(defaultValue = "20") int size,
 
-            @Parameter(description = "Sort field. Allowed: title, author, difficultyLevel")
+            @Parameter(description = "Sort field. Allowed: title, author, difficulty")
             @RequestParam(defaultValue = "title") String sort,
 
             @Parameter(description = "Sort direction: asc or desc")
@@ -75,5 +91,32 @@ public class BookController {
         );
 
         return searchBooksUseCase.execute(filter, pageable);
+    }
+
+    @GetMapping("/{bookId}")
+    @Operation(
+            summary = "Get book details",
+            description = "Returns book details by id, including title, author, difficulty and categories."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = CategoryResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not Found"
+    )
+    public BookDetailsResponse getBookDetails(
+            @Parameter(description = "Book id", required = true)
+            @PathVariable Long bookId) {
+
+        log.info("Getting book details. bookId={}", bookId);
+
+        return getBookDetailsUseCase.execute(bookId);
     }
 }

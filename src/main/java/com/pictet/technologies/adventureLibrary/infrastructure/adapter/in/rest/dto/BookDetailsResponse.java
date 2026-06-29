@@ -7,7 +7,7 @@ import lombok.Builder;
 import java.util.Set;
 
 @Builder
-public record BookSummaryResponse(
+public record BookDetailsResponse(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
         Long id,
@@ -26,5 +26,5 @@ public record BookSummaryResponse(
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         Set<SectionResponse> sections
-
-) {}
+) {
+}

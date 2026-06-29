@@ -45,7 +45,7 @@ public class BookPageableFactory {
     private static final Map<String, String> SORT_FIELDS = Map.of(
             "title", "title",
             "author", "author",
-            "difficulty", "difficultyLevel",
+            "difficulty", "difficulty",
             "createdAt", "createdAt"
     );
 

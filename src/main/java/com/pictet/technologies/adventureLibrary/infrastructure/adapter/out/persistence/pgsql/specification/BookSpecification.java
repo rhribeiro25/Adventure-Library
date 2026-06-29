@@ -64,7 +64,7 @@ public final class BookSpecification {
                 return criteriaBuilder.conjunction();
             }
 
-            return criteriaBuilder.equal(root.get("difficultyLevel"), difficultyLevel);
+            return criteriaBuilder.equal(root.get("difficulty"), difficultyLevel);
         };
     }
 
