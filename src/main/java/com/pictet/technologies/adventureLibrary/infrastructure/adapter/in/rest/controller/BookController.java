@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/books")
-@Tag(name = "Books", description = "Book catalog and search APIs")
+@Tag(name = "Books", description = "Book catalog management APIs")
 public class BookController {
 
     private static final int MAX_PAGE_SIZE = 100;
