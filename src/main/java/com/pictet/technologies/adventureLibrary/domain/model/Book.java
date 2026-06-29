@@ -4,7 +4,9 @@ import com.pictet.technologies.adventureLibrary.domain.model.enums.DifficultyLev
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,8 +21,8 @@ public class Book {
     private DifficultyLevel difficultyLevel;
 
     @Builder.Default
-    private List<Category> categories = new ArrayList<>();
+    private Set<Category> categories = new HashSet<>();
 
     @Builder.Default
-    private List<Section> sections = new ArrayList<>();
+    private Set<Section> sections = new HashSet<>();
 }

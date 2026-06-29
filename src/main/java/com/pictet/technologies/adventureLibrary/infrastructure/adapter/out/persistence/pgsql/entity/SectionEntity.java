@@ -6,11 +6,13 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "sections", uniqueConstraints = {
-    @UniqueConstraint(name = "uk_book_section_number", columnNames = {"book_id", "section_number"})
+        @UniqueConstraint(name = "uk_book_section_number", columnNames = {"book_id", "section_number"})
 })
 @Getter
 @Setter
@@ -29,11 +31,11 @@ public class SectionEntity extends AbstractEntity {
     @Column(nullable = false)
     private SectionEntityType type;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "book_id", nullable = false)
     private BookEntity book;
 
     @Builder.Default
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OptionEntity> options = new ArrayList<>();
+    @OneToMany(mappedBy = "section", fetch = FetchType.LAZY)
+    private Set<OptionEntity> options = new HashSet<>();
 }

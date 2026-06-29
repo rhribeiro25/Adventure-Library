@@ -19,10 +19,10 @@ public class OptionEntity extends AbstractEntity {
     @Column(name = "goto_section_number", nullable = false)
     private Long gotoSectionNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "section_id", nullable = false)
     private SectionEntity section;
 
-    @OneToOne(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "option")
     private ConsequenceEntity consequence;
 }

@@ -42,4 +42,5 @@ public class BookEntityMapper {
                 .sections(sectionEntityMapper.toEntity(domain.getSections()))
                 .build();
     }
+
 }

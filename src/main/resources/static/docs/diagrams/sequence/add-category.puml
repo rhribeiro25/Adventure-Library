@@ -1,0 +1,49 @@
+@startuml
+actor user as "Angular App"
+
+box "API Layer" #LightBlue
+participant "CategoryController" as controller <<(C,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CreateCategoryUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Persistence Layer" #LightCoral
+participant "CategoryRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+
+note right user
+POST /api/v1/categories
+
+{
+  "name": "Fantasy"
+}
+end note
+
+user -> controller : createCategory(request)
+controller -> usecase : execute(name)
+
+usecase -> usecase : Normalize category name
+
+usecase -> repository : findByNameIgnoreCase(name)
+repository -> db : SELECT category
+db --> repository : CategoryEntity / empty
+repository --> usecase : Category / empty
+
+alt Category already exists
+    usecase --> controller : CategoryAlreadyExistsException
+    controller --> user : 409 Conflict
+else Category does not exist
+    usecase -> repository : save(category)
+    repository -> db : INSERT category
+    db --> repository : CategoryEntity
+    repository --> usecase : Category
+
+    usecase --> controller : CategoryResponse
+    controller --> user : 201 Created
+end
+
+@enduml

@@ -26,11 +26,11 @@ public class GameEntity extends AbstractEntity {
     @Column(nullable = false)
     private GameEntityStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "book_id", nullable = false)
     private BookEntity book;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "current_section_id", nullable = false)
     private SectionEntity currentSection;
 
