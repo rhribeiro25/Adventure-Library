@@ -4,7 +4,9 @@ import com.pictet.technologies.adventureLibrary.domain.model.enums.SectionType;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -18,5 +20,5 @@ public class Section {
     private SectionType type;
 
     @Builder.Default
-    private List<Option> options = new ArrayList<>();
+    private Set<Option> options = new HashSet<>();
 }

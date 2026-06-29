@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -38,23 +40,23 @@ public class OptionEntityMapper {
                 .build();
     }
 
-    public List<Option> toDomain(List<OptionEntity> entities) {
+    public Set<Option> toDomain(Set<OptionEntity> entities) {
         if (entities == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return entities.stream()
                 .map(this::toDomain)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
-    public List<OptionEntity> toEntity(List<Option> domains) {
+    public Set<OptionEntity> toEntity(Set<Option> domains) {
         if (domains == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return domains.stream()
                 .map(this::toEntity)
-                .toList();
+                .collect(Collectors.toSet());
     }
 }

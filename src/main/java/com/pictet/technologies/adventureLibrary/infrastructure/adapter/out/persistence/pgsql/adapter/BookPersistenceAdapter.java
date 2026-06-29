@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class BookPersistenceAdapter implements BookPersistencePort {
     private final DifficultyLevelEntityMapper difficultyLevelEntityMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Book> searchBooks(BookSearchFilter filter, Pageable pageable) {
         BookEntityDifficultyLevel entityDifficultyLevel = difficultyLevelEntityMapper.toEntity(filter.getDifficulty());
         return repository.findAll(BookSpecification.from(filter, entityDifficultyLevel), pageable).map(bookEntityMapper::toDomain);

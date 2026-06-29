@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -42,24 +44,24 @@ public class SectionEntityMapper {
                 .build();
     }
 
-    public List<Section> toDomain(List<SectionEntity> entities) {
+    public Set<Section> toDomain(Set<SectionEntity> entities) {
         if (entities == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return entities.stream()
                 .map(this::toDomain)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
-    public List<SectionEntity> toEntity(List<Section> domains) {
+    public Set<SectionEntity> toEntity(Set<Section> domains) {
         if (domains == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return domains.stream()
                 .map(this::toEntity)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     private SectionType toDomainType(SectionEntityType entityType) {

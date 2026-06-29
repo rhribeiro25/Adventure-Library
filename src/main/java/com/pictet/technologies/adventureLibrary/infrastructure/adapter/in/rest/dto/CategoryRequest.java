@@ -1,0 +1,11 @@
+package com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record CategoryRequest(
+        @NotBlank(message = "Category name is required.")
+        @Size(max = 255)
+        String name
+) {
+}

@@ -23,7 +23,7 @@ public class ConsequenceEntity extends AbstractEntity {
     @Column(columnDefinition = "TEXT")
     private String text;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(optional = false)
     @JoinColumn(name = "option_id", nullable = false)
     private OptionEntity option;
 }

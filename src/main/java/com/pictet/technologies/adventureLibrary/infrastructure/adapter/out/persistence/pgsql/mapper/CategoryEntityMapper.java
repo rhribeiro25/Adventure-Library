@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class CategoryEntityMapper {
@@ -32,23 +34,23 @@ public class CategoryEntityMapper {
                 .build();
     }
 
-    public List<Category> toDomain(List<CategoryEntity> entities) {
+    public Set<Category> toDomain(Set<CategoryEntity> entities) {
         if (entities == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return entities.stream()
                 .map(this::toDomain)
-                .toList();
+                .collect(Collectors.toSet());
     }
 
-    public List<CategoryEntity> toEntity(List<Category> domains) {
+    public Set<CategoryEntity> toEntity(Set<Category> domains) {
         if (domains == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return domains.stream()
                 .map(this::toEntity)
-                .toList();
+                .collect(Collectors.toSet());
     }
 }

@@ -6,7 +6,9 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -28,15 +30,15 @@ public class BookEntity extends AbstractEntity {
     private BookEntityDifficultyLevel difficultyLevel;
 
     @Builder.Default
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    private List<CategoryEntity> categories = new ArrayList<>();
+    private Set<CategoryEntity> categories = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SectionEntity> sections = new ArrayList<>();
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private Set<SectionEntity> sections = new HashSet<>();
 }
