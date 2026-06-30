@@ -17,6 +17,7 @@ participant "BookValidator" as validator <<(C,#ADD1B2)>>
 end box
 
 database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
 
 user -> controller : POST /api/v1/books\nCreateBookRequest
 
@@ -28,20 +29,11 @@ body: CreateBookRequest
    "title":"The Prisoner",
    "author":"Daniel El Fuego",
    "difficulty":"HARD",
-   "sections":[
-      {
-         "id":1,
-         "text":"You wake up in ...",
-         "type":"BEGIN",
-         "options":[
-            {
-               "description":"You try to open the door",
-               "gotoId":500
-            }
-         ]
-      }
-   ]
+   "sections":[...]
 }
+
+Response:
+- BookDetailsResponse
 end note
 
 controller -> usecase : execute(request)
@@ -71,6 +63,10 @@ repository -> db : INSERT consequences
 db --> repository : saved BookEntity
 
 repository --> adapter : Book
+
+adapter -> redis : SET books::{bookId}
+adapter -> redis : EVICT books-search::*
+
 adapter --> usecase : Book
 usecase --> controller : BookDetailsResponse
 

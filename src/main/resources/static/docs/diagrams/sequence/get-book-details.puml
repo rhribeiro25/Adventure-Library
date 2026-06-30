@@ -1,29 +1,63 @@
 @startuml
 actor user as "Angular App"
 
-box "API Layer" #LightBlue
+box "Infrastructure Layer" #LightBlue
 participant "BookController" as controller <<(C,#ADD1B2)>>
-end box
-
-box "Application Layer" #LightGreen
-participant "BookUseCase" as usecase <<(C,#ADD1B2)>>
-end box
-
-box "Persistence Layer" #LightCoral
+participant "BookPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
 participant "BookRepository" as repository <<(I,#ADD1B2)>>
 end box
 
+box "Application Layer" #LightGreen
+participant "GetBookDetailsUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "BookDetailsService" as service <<(C,#ADD1B2)>>
+end box
+
 database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
+
+user -> controller : GET /api/v1/books/{bookId}
 
 note right user
-GET /api/v1/books/{bookId}
+Path parameter:
+- bookId: Long
+
+Response:
+- BookDetailsResponse
 end note
-user -> controller
-controller -> usecase : getBookDetails(bookId)
-usecase -> repository : findById(bookId)
-repository -> db : SELECT book, categories
-db --> repository : BookEntity
-repository --> usecase : Book
-usecase --> controller : BookDetailsResponse
-controller --> user : 200 OK
+
+controller -> usecase : execute(bookId)
+
+usecase -> service : validate(bookId)
+service --> usecase : valid id
+
+usecase -> adapter : findDetailsById(bookId)
+
+adapter -> redis : GET books::{bookId}
+
+alt Cache hit
+    redis --> adapter : Book
+else Cache miss
+    redis --> adapter : empty
+
+    adapter -> repository : findById(bookId)
+    repository -> db : SELECT book,\ncategories,\nsections,\noptions,\nconsequences
+    db --> repository : BookEntity
+
+    repository --> adapter : BookEntity
+    adapter -> redis : SET books::{bookId}
+end
+
+adapter --> usecase : Book / empty
+
+alt Book not found
+    usecase --> controller : NotFoundException
+    controller --> user : 404 Not Found
+else Book found
+    usecase --> controller : BookDetailsResponse
+    controller --> user : 200 OK
+end
+
 @enduml

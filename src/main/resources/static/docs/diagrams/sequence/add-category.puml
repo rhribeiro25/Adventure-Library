@@ -32,7 +32,7 @@ usecase -> service : createCategory(request.name)
 service -> service : normalize name
 service -> usecase : normalize name
 
-usecase -> adapter : category name
+usecase -> adapter : findByName(name)
 adapter -> repository : findByNameIgnoreCase(name)
 repository -> db : SELECT category
 db --> repository : CategoryEntity / empty
