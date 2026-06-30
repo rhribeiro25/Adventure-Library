@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventureLibrary.shared.config;
+package com.pictet.technologies.adventureLibrary.infrastructure.shared.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

@@ -1,5 +1,6 @@
 package com.pictet.technologies.adventureLibrary.application.usecase;
 
+import com.pictet.technologies.adventureLibrary.domain.port.in.SearchBooksRestPort;
 import com.pictet.technologies.adventureLibrary.domain.port.out.BookPersistencePort;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.BookSearchFilter;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.BookSummaryResponse;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SearchBooksUseCase {
+public class SearchBooksUseCase implements SearchBooksRestPort {
 
     private final BookPersistencePort bookPersistencePort;
     private final BookDtoMapper bookDtoMapper;
