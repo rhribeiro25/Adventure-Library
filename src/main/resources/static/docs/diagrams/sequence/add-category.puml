@@ -1,46 +1,54 @@
 @startuml
 actor user as "Angular App"
 
-box "API Layer" #LightBlue
+box "Infrastructure Layer" #LightBlue
 participant "CategoryController" as controller <<(C,#ADD1B2)>>
+participant "CategoryPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
+participant "CategoryRepository" as repository <<(I,#ADD1B2)>>
 end box
 
 box "Application Layer" #LightGreen
 participant "CreateCategoryUseCase" as usecase <<(C,#ADD1B2)>>
 end box
 
-box "Persistence Layer" #LightCoral
-participant "CategoryRepository" as repository <<(I,#ADD1B2)>>
+box "Model Layer" #Wheat
+participant "CategoryCreationService" as service <<(C,#ADD1B2)>>
 end box
 
 database "PostgreSQL" as db #MediumBlue
 
-note right user
-POST /api/v1/categories
+user -> controller : POST /api/v1/categories
 
+note right user
+body: SaveCategoryRequest
 {
   "name": "Fantasy"
 }
 end note
 
-user -> controller : createCategory(request)
-controller -> usecase : execute(name)
+controller -> usecase : execute(request)
 
-usecase -> usecase : Normalize category name
+usecase -> service : createCategory(request.name)
+service -> service : normalize name
+service -> usecase : normalize name
 
-usecase -> repository : findByNameIgnoreCase(name)
+usecase -> adapter : category name
+adapter -> repository : findByNameIgnoreCase(name)
 repository -> db : SELECT category
 db --> repository : CategoryEntity / empty
-repository --> usecase : Category / empty
+repository --> adapter : Category / empty
+adapter --> usecase : Optional<Category>
 
 alt Category already exists
     usecase --> controller : CategoryAlreadyExistsException
     controller --> user : 409 Conflict
 else Category does not exist
-    usecase -> repository : save(category)
+    usecase -> adapter : Category
+    adapter -> repository : save(CategoryEntity)
     repository -> db : INSERT category
     db --> repository : CategoryEntity
-    repository --> usecase : Category
+    repository --> adapter : CategoryEntity
+    adapter --> usecase : Category
 
     usecase --> controller : CategoryResponse
     controller --> user : 201 Created
