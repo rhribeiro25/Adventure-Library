@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventurelibrary.domain.service.validation;
+package com.pictet.technologies.adventurelibrary.domain.service.validation.game;
 
 import com.pictet.technologies.adventurelibrary.domain.exception.BusinessException;
 import com.pictet.technologies.adventurelibrary.domain.model.Game;

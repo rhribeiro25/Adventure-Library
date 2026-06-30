@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventurelibrary.domain.service.validation;
+package com.pictet.technologies.adventurelibrary.domain.service.validation.option;
 
 import com.pictet.technologies.adventurelibrary.domain.exception.BadRequestException;
 import com.pictet.technologies.adventurelibrary.domain.model.Game;

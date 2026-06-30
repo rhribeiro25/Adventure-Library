@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.adapter;
+package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.adapter;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
 import com.pictet.technologies.adventurelibrary.domain.port.out.BookPersistencePort;

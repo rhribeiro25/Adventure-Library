@@ -1,6 +1,7 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Section;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CreateSectionRequest;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.SectionResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,21 @@ public class SectionDtoMapper {
                 .text(section.getText())
                 .type(section.getType())
                 .options(optionDtoMapper.toOptionResponses(section.getOptions()))
+                .build();
+    }
+
+    public Set<Section> toSections(Set<CreateSectionRequest> sections) {
+        return sections.stream()
+                .map(this::toSection)
+                .collect(Collectors.toSet());
+    }
+
+    public Section toSection(CreateSectionRequest request) {
+        return Section.builder()
+                .id(request.id())
+                .text(request.text().trim())
+                .type(request.type())
+                .options(optionDtoMapper.toOptions(request.options()))
                 .build();
     }
 }

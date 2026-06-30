@@ -5,8 +5,8 @@ import com.pictet.technologies.adventurelibrary.domain.model.Game;
 import com.pictet.technologies.adventurelibrary.domain.model.Option;
 import com.pictet.technologies.adventurelibrary.domain.model.Section;
 import com.pictet.technologies.adventurelibrary.domain.port.out.SectionPersistencePort;
-import com.pictet.technologies.adventurelibrary.domain.service.validation.GameValidation;
-import com.pictet.technologies.adventurelibrary.domain.service.validation.SelectedOptionValidation;
+import com.pictet.technologies.adventurelibrary.domain.service.validation.game.GameValidation;
+import com.pictet.technologies.adventurelibrary.domain.service.validation.option.SelectedOptionValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
