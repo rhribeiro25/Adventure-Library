@@ -3,9 +3,7 @@ package com.pictet.technologies.adventureLibrary.domain.model;
 import com.pictet.technologies.adventureLibrary.domain.model.enums.SectionType;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter

@@ -2,8 +2,8 @@ package com.pictet.technologies.adventureLibrary.application.usecase;
 
 import com.pictet.technologies.adventureLibrary.domain.model.Category;
 import com.pictet.technologies.adventureLibrary.domain.port.out.CategoryPersistencePort;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.dto.CategoryResponse;
-import com.pictet.technologies.adventureLibrary.infrastructure.adapter.in.rest.mapper.CategoryDtoMapper;
+import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.CategoryResponse;
+import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.mapper.CategoryDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
