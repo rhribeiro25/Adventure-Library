@@ -11,7 +11,7 @@ import lombok.*;
 public class Game {
 
     private Long id;
-    private String player;
+    private Player player;
     private Book book;
     private Section currentSection;
     private Integer health;

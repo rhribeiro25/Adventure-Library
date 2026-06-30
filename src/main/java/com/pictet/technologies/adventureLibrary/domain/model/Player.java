@@ -7,10 +7,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Option {
+public class Player {
 
     private Long id;
-    private String description;
-    private Long nextSectionId;
-    private Consequence consequence;
+    private String email;
+    private String name;
 }
