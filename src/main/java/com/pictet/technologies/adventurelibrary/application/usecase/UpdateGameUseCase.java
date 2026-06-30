@@ -30,7 +30,7 @@ public class UpdateGameUseCase implements UpdateGameRestPort {
 
         gameUpdateService.updateStatus(game, status);
 
-        Game savedGame = gamePersistencePort.save(game);
+        Game savedGame = gamePersistencePort.update(game);
 
         return gameDtoMapper.toResponse(savedGame);
     }

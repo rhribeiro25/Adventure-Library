@@ -1,0 +1,64 @@
+@startuml
+actor user as "Angular App"
+
+box "Infrastructure Layer" #LightBlue
+participant "GameController" as controller <<(C,#ADD1B2)>>
+participant "GamePersistenceAdapter" as adapter <<(C,#ADD1B2)>>
+participant "GameRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "UpdateGameStatusUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "GameStatusService" as service <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+
+user -> controller : PATCH /api/v1/games/{gameId}
+
+note right user
+Path parameter:
+- gameId: Long
+
+Query parameter:
+- status = PLAYING | PAUSED | STOPPED
+
+Response:
+- GameResponse
+end note
+
+controller -> usecase : execute(gameId, status)
+
+usecase -> adapter : findById(gameId)
+
+adapter -> repository : findById(gameId)
+repository -> db : SELECT game
+db --> repository : GameEntity
+repository --> adapter : GameEntity
+
+adapter --> usecase : Game / empty
+
+alt Game not found
+    usecase --> controller : NotFoundException
+    controller --> user : 404 Not Found
+else Game found
+    usecase -> service : updateStatus(game, status)
+    service --> usecase : updated Game
+
+    usecase -> adapter : save(game)
+
+    adapter -> repository : save(GameEntity)
+    repository -> db : UPDATE games SET status
+    db --> repository : updated GameEntity
+
+    repository --> adapter : GameEntity
+    adapter --> usecase : Game
+
+    usecase --> controller : GameResponse
+    controller --> user : 200 OK
+end
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+actor user as "Angular App"
+
+box "Infrastructure Layer" #LightBlue
+participant "BookController" as controller <<(C,#ADD1B2)>>
+participant "BookPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
+participant "BookRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "SearchBooksUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "BookSearchService" as service <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
+
+user -> controller : GET /api/v1/books
+
+note right user
+Query parameters:
+- query
+- title
+- author
+- difficulty
+- category
+- page
+- size
+- sort
+- direction
+
+Response:
+- Page<BookDetailsResponse>
+end note
+
+controller -> usecase : execute(filter, pageable)
+
+usecase -> service : validate(filter)
+service --> usecase : valid filter
+
+usecase -> adapter : searchBooks(filter, pageable)
+
+adapter -> redis : GET books-search::{filter,pageable}
+
+alt Cache hit
+    redis --> adapter : Page<Book>
+else Cache miss
+    redis --> adapter : empty
+
+    adapter -> repository : findAll(specification, pageable)
+    repository -> db : SELECT books\nwith filters, sorting\nand pagination
+    db --> repository : Page<BookEntity>
+
+    repository --> adapter : Page<BookEntity>
+    adapter -> redis : SET books-search::{filter,pageable}
+end
+
+adapter --> usecase : Page<Book>
+
+usecase --> controller : Page<BookDetailsResponse>
+controller --> user : 200 OK
+
+@enduml
