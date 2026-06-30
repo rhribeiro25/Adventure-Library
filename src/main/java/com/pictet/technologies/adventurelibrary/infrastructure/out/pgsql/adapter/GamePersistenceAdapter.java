@@ -53,9 +53,9 @@ public class GamePersistenceAdapter implements GamePersistencePort {
 
         gameEntityMapper.mergeToEntity(entity, game);
 
-        GameEntity savedEntity = gameJpaRepository.save(entity);
+        GameEntity saved = gameJpaRepository.save(entity);
 
-        return gameEntityMapper.toDomain(savedEntity);
+        return gameEntityMapper.toDomain(saved);
     }
 
 }

@@ -2,6 +2,7 @@ package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Category;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CategoryResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class CategoryDtoMapper {
 
 
@@ -27,5 +29,16 @@ public class CategoryDtoMapper {
                 category.getId(),
                 category.getName()
         );
+    }
+
+    public Set<Category> toCategories(Set<String> categories) {
+        if (categories == null) {
+            return Collections.emptySet();
+        }
+
+        return categories.stream()
+                .filter(name -> name != null && !name.isBlank())
+                .map(name -> Category.builder().name(name.trim()).build())
+                .collect(Collectors.toSet());
     }
 }

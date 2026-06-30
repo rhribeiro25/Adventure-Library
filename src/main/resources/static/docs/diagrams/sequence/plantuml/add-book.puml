@@ -1,0 +1,75 @@
+@startuml
+actor user as "Angular App"
+
+box "Infrastructure Layer" #LightBlue
+participant "BookController" as controller <<(C,#ADD1B2)>>
+participant "BookPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
+participant "BookRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "CreateBookUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "BookCreationService" as service <<(C,#ADD1B2)>>
+participant "BookValidator" as validator <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
+
+user -> controller : POST /api/v1/books\nCreateBookRequest
+
+note right user
+POST /api/v1/books
+
+body: CreateBookRequest
+{
+   "title":"The Prisoner",
+   "author":"Daniel El Fuego",
+   "difficulty":"HARD",
+   "sections":[...]
+}
+
+Response:
+- BookDetailsResponse
+end note
+
+controller -> usecase : execute(request)
+
+usecase -> service : createBook(request)
+service -> validator : validate(book)
+
+group PDF validation rules
+    validator -> validator : exactly one BEGIN
+    validator -> validator : at least one END
+    validator -> validator : all gotoId exist
+    validator -> validator : non-END sections have options
+    validator -> validator : unique section ids
+end
+
+validator --> service : valid book
+service --> usecase : Book
+
+usecase -> adapter : save(book)
+
+adapter -> repository : save(BookEntity)
+repository -> db : INSERT books
+repository -> db : INSERT categories / book_categories
+repository -> db : INSERT sections
+repository -> db : INSERT options
+repository -> db : INSERT consequences
+db --> repository : saved BookEntity
+
+repository --> adapter : Book
+
+adapter -> redis : SET books::{bookId}
+adapter -> redis : EVICT books-search::*
+
+adapter --> usecase : Book
+usecase --> controller : BookDetailsResponse
+
+controller --> user : 201 Created
+
+@enduml

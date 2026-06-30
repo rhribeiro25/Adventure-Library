@@ -17,8 +17,8 @@ services:
       DATABASE_USER: postgres
       DATABASE_PASSWORD: postgres
       # Redis
-#      REDIS_HOST: redis
-#      REDIS_PORT: 6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       pgsql:
         condition: service_healthy
@@ -47,16 +47,16 @@ services:
     networks:
       - app-net
 
-#  redis:
-#    container_name: redis
-#    image: redis:7
-#    restart: unless-stopped
-#    ports:
-#      - "6379:6379"
-#    volumes:
-#      - ./.data/redis:/data
-#    networks:
-#      - app-net
+  redis:
+    container_name: redis
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.data/redis:/data
+    networks:
+      - app-net
 
 networks:
   app-net:

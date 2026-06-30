@@ -1,0 +1,84 @@
+@startuml
+actor user as "Angular App"
+
+box "Infrastructure Layer" #LightBlue
+participant "BookController" as controller <<(C,#ADD1B2)>>
+participant "BookPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
+participant "BookRepository" as repository <<(I,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "UpdateBookUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "BookUpdateService" as service <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
+
+user -> controller : PATCH /api/v1/books/{bookId}
+
+note right user
+Path parameter:
+- bookId: Long
+
+body: UpdateBookRequest
+{
+  "title": "New title",
+  "author": "New author",
+  "difficulty": "HARD",
+  "categories": [1, 2]
+}
+
+Response:
+- BookDetailsResponse
+end note
+
+controller -> usecase : execute(bookId, request)
+
+usecase -> adapter : findDetailsById(bookId)
+
+adapter -> redis : GET books::{bookId}
+
+alt Cache hit
+    redis --> adapter : Book
+else Cache miss
+    redis --> adapter : empty
+
+    adapter -> repository : findById(bookId)
+    repository -> db : SELECT book,\ncategories,\nsections,\noptions,\nconsequences
+    db --> repository : BookEntity
+
+    repository --> adapter : BookEntity
+    adapter -> redis : SET books::{bookId}
+end
+
+adapter --> usecase : Book / empty
+
+alt Book not found
+    usecase --> controller : NotFoundException
+    controller --> user : 404 Not Found
+else Book found
+    usecase -> service : applyPartialUpdates(book, request)
+    service --> usecase : updated Book
+
+    usecase -> adapter : save(book)
+
+    adapter -> repository : save(BookEntity)
+    repository -> db : UPDATE books
+    repository -> db : UPDATE book_categories
+    db --> repository : updated BookEntity
+
+    repository --> adapter : Book
+
+    adapter -> redis : SET books::{bookId}
+    adapter -> redis : EVICT books-search::*
+
+    adapter --> usecase : Book
+    usecase --> controller : BookDetailsResponse
+    controller --> user : 200 OK
+end
+
+@enduml

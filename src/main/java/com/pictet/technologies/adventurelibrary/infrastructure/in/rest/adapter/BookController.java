@@ -1,13 +1,11 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.adapter;
 
 import com.pictet.technologies.adventurelibrary.domain.model.enums.DifficultyLevel;
+import com.pictet.technologies.adventurelibrary.domain.port.in.CreateBookRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.GetBookDetailsRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.SearchBooksRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.UpdateBookRestPort;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookDetailsResponse;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookSearchFilter;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookSummaryResponse;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.UpdateBookRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.*;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.pagination.BookPageableFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @Slf4j
 @RestController
@@ -36,11 +37,12 @@ public class BookController {
     private final BookPageableFactory pageableFactory;
     private final GetBookDetailsRestPort getBookDetailsRestPort;
     private final UpdateBookRestPort updateBookRestPort;
+    private final CreateBookRestPort createBookRestPort;
 
     @GetMapping
     @Operation(
             summary = "Search books",
-            description = "Lists books with optional filters by title/author query, author, difficulty and category."
+            description = "Lists books with optional filters by title/author query, title, author, difficulty and category."
     )
     @ApiResponse(
             responseCode = "200",
@@ -55,6 +57,9 @@ public class BookController {
     public Page<BookSummaryResponse> searchBooks(
             @Parameter(description = "Search by title or author")
             @RequestParam(required = false) String query,
+
+            @Parameter(description = "Filter by title")
+            @RequestParam(required = false) String title,
 
             @Parameter(description = "Filter by author")
             @RequestParam(required = false) String author,
@@ -86,14 +91,15 @@ public class BookController {
 
         BookSearchFilter filter = BookSearchFilter.builder()
                 .query(query)
+                .title(title)
                 .author(author)
                 .difficulty(difficulty)
                 .category(category)
                 .build();
 
         log.info(
-                "Searching books. query={}, author={}, difficulty={}, category={}, page={}, size={}, sort={}, direction={}",
-                query, author, difficulty, category, page, safeSize, sort, sortDirection
+                "Searching books. query={}, title={}, author={}, difficulty={}, category={}, page={}, size={}, sort={}, direction={}",
+                query, author, title, difficulty, category, page, safeSize, sort, sortDirection
         );
 
         return searchBooksRestPort.execute(filter, pageable);
@@ -157,5 +163,33 @@ public class BookController {
         log.info("Updating book. bookId={}", bookId);
 
         return updateBookRestPort.execute(bookId, request);
+    }
+
+    @PostMapping
+    @Operation(
+            summary = "Create book",
+            description = "Adds a new adventure book to the collection."
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Created",
+            content = @Content(schema = @Schema(implementation = BookDetailsResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request",
+            content = @Content
+    )
+    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
+    public ResponseEntity<BookDetailsResponse> createBook(
+            @Valid @RequestBody CreateBookRequest request) {
+
+        log.info("Creating book. title={}, author={}", request.title(), request.author());
+
+        BookDetailsResponse response = createBookRestPort.execute(request);
+
+        return ResponseEntity
+                .created(URI.create("/api/v1/books/" + response.id()))
+                .body(response);
     }
 }

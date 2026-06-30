@@ -3,6 +3,7 @@ package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookDetailsResponse;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookSummaryResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CreateBookRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,15 @@ public class BookDtoMapper {
                 .difficulty(book.getDifficultyLevel())
                 .categories(categoryDtoMapper.toCategoryResponses(book.getCategories()))
                 .sections(sectionDtoMapper.toSectionResponses(book.getSections()))
+                .build();
+    }
+
+    public Book toDomain(CreateBookRequest request) {
+        return Book.builder()
+                .title(request.title().trim())
+                .author(request.author().trim())
+                .difficultyLevel(request.difficulty())
+                .sections(sectionDtoMapper.toSections(request.sections()))
                 .build();
     }
 

@@ -2,9 +2,11 @@ package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Game;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.GameResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class GameDtoMapper {
 
     public GameResponse toResponse(Game game) {
@@ -17,4 +19,5 @@ public class GameDtoMapper {
                 .currentSectionNumber(game.getCurrentSection().getId())
                 .build();
     }
+
 }

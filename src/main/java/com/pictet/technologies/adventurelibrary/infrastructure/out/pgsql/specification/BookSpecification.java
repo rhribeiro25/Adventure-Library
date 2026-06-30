@@ -23,6 +23,7 @@ public final class BookSpecification {
 
         return Specification
                 .where(queryContains(filter.getQuery()))
+                .and(titleContains(filter.getTitle()))
                 .and(authorContains(filter.getAuthor()))
                 .and(difficultyEquals(difficultyLevel))
                 .and(categoryEquals(filter.getCategory()));
@@ -39,6 +40,19 @@ public final class BookSpecification {
             return criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), value),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("author")), value)
+            );
+        };
+    }
+
+    private static Specification<BookEntity> titleContains(String title) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
+            if (title == null || title.isBlank()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            return criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("title")),
+                    "%" + title.trim().toLowerCase() + "%"
             );
         };
     }
@@ -64,7 +78,7 @@ public final class BookSpecification {
                 return criteriaBuilder.conjunction();
             }
 
-            return criteriaBuilder.equal(root.get("difficulty"), difficultyLevel);
+            return criteriaBuilder.equal(root.get("difficultyLevel"), difficultyLevel);
         };
     }
 
