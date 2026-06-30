@@ -233,14 +233,5 @@ Password: postgres
 </details>
 
 
-
-Missing
-
-Start Game
-POST /api/v1/books/{bookId}/games
-
-Get Game Details
-GET /api/v1/games/{gameId}
-
 #
 
