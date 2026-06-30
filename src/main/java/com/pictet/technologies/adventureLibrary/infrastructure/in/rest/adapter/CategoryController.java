@@ -1,8 +1,8 @@
-package com.pictet.technologies.adventureLibrary.infrastructure.in.rest.controller;
+package com.pictet.technologies.adventureLibrary.infrastructure.in.rest.adapter;
 
-import com.pictet.technologies.adventureLibrary.application.usecase.CreateCategoryUseCase;
-import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.SaveCategoryRequest;
+import com.pictet.technologies.adventureLibrary.domain.port.in.CreateCategoryPort;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.CategoryResponse;
+import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.SaveCategoryRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,7 +27,7 @@ import java.net.URI;
 @Tag(name = "Categories", description = "Category management APIs")
 public class CategoryController {
 
-    private final CreateCategoryUseCase createCategoryUseCase;
+    private final CreateCategoryPort createCategoryPort;
 
     @PostMapping
     @Operation(
@@ -54,7 +54,7 @@ public class CategoryController {
 
         log.info("Creating category '{}'", request.name());
 
-        CategoryResponse response = createCategoryUseCase.execute(request.name());
+        CategoryResponse response = createCategoryPort.execute(request.name());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

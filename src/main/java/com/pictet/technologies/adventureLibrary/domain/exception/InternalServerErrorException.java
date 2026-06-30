@@ -1,6 +1,6 @@
 package com.pictet.technologies.adventureLibrary.domain.exception;
 
-import com.pictet.technologies.adventureLibrary.shared.utils.MessageUtils;
+import com.pictet.technologies.adventureLibrary.infrastructure.shared.utils.MessageUtils;
 import org.springframework.http.HttpStatus;
 
 public class InternalServerErrorException extends BusinessException {

@@ -1,6 +1,6 @@
-package com.pictet.technologies.adventureLibrary.infrastructure.in.rest.controller;
+package com.pictet.technologies.adventureLibrary.infrastructure.in.rest.adapter;
 
-import com.pictet.technologies.adventureLibrary.application.usecase.NavigateGameUseCase;
+import com.pictet.technologies.adventureLibrary.domain.port.in.NavigateGamePort;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.GameResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Games", description = "Game navigation and progress APIs")
 public class GameController {
 
-    private final NavigateGameUseCase navigateGameUseCase;
+    private final NavigateGamePort navigateGamePort;
 
     @PostMapping("/{gameId}/choices")
     @Operation(
@@ -50,6 +50,6 @@ public class GameController {
 
         log.info("Choosing option. gameId={}, optionId={}", gameId, optionId);
 
-        return navigateGameUseCase.execute(gameId, optionId);
+        return navigateGamePort.execute(gameId, optionId);
     }
 }

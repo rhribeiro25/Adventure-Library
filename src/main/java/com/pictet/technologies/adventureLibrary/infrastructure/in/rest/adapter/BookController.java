@@ -1,9 +1,9 @@
-package com.pictet.technologies.adventureLibrary.infrastructure.in.rest.controller;
+package com.pictet.technologies.adventureLibrary.infrastructure.in.rest.adapter;
 
-import com.pictet.technologies.adventureLibrary.application.usecase.GetBookDetailsUseCase;
-import com.pictet.technologies.adventureLibrary.application.usecase.SearchBooksUseCase;
-import com.pictet.technologies.adventureLibrary.application.usecase.UpdateBookUseCase;
 import com.pictet.technologies.adventureLibrary.domain.model.enums.DifficultyLevel;
+import com.pictet.technologies.adventureLibrary.domain.port.in.GetBookDetailsRestPort;
+import com.pictet.technologies.adventureLibrary.domain.port.in.SearchBooksRestPort;
+import com.pictet.technologies.adventureLibrary.domain.port.in.UpdateBookRestPort;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.BookDetailsResponse;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.BookSearchFilter;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.BookSummaryResponse;
@@ -32,10 +32,10 @@ public class BookController {
 
     private static final int MAX_PAGE_SIZE = 100;
 
-    private final SearchBooksUseCase searchBooksUseCase;
+    private final SearchBooksRestPort searchBooksRestPort;
     private final BookPageableFactory pageableFactory;
-    private final GetBookDetailsUseCase getBookDetailsUseCase;
-    private final UpdateBookUseCase updateBookUseCase;
+    private final GetBookDetailsRestPort getBookDetailsRestPort;
+    private final UpdateBookRestPort updateBookRestPort;
 
     @GetMapping
     @Operation(
@@ -96,7 +96,7 @@ public class BookController {
                 query, author, difficulty, category, page, safeSize, sort, sortDirection
         );
 
-        return searchBooksUseCase.execute(filter, pageable);
+        return searchBooksRestPort.execute(filter, pageable);
     }
 
     @GetMapping("/{bookId}")
@@ -125,7 +125,7 @@ public class BookController {
 
         log.info("Getting book details. bookId={}", bookId);
 
-        return getBookDetailsUseCase.execute(bookId);
+        return getBookDetailsRestPort.execute(bookId);
     }
 
     @PatchMapping("/{bookId}")
@@ -156,6 +156,6 @@ public class BookController {
 
         log.info("Updating book. bookId={}", bookId);
 
-        return updateBookUseCase.execute(bookId, request);
+        return updateBookRestPort.execute(bookId, request);
     }
 }

@@ -4,6 +4,7 @@ import com.pictet.technologies.adventureLibrary.domain.exception.NotFoundExcepti
 import com.pictet.technologies.adventureLibrary.domain.model.Game;
 import com.pictet.technologies.adventureLibrary.domain.model.Option;
 import com.pictet.technologies.adventureLibrary.domain.model.Section;
+import com.pictet.technologies.adventureLibrary.domain.port.in.NavigateGamePort;
 import com.pictet.technologies.adventureLibrary.domain.port.out.GamePersistencePort;
 import com.pictet.technologies.adventureLibrary.domain.port.out.SectionPersistencePort;
 import com.pictet.technologies.adventureLibrary.domain.service.SelectedOptionValidation;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class NavigateGameUseCase {
+public class NavigateGameUseCase implements NavigateGamePort {
 
     private final GamePersistencePort gamePersistencePort;
     private final SectionPersistencePort sectionPersistencePort;

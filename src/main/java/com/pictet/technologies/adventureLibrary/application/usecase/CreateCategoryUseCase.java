@@ -1,6 +1,7 @@
 package com.pictet.technologies.adventureLibrary.application.usecase;
 
 import com.pictet.technologies.adventureLibrary.domain.model.Category;
+import com.pictet.technologies.adventureLibrary.domain.port.in.CreateCategoryPort;
 import com.pictet.technologies.adventureLibrary.domain.port.out.CategoryPersistencePort;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.CategoryResponse;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.mapper.CategoryDtoMapper;
@@ -10,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCategoryUseCase {
+public class CreateCategoryUseCase implements CreateCategoryPort {
 
     private final CategoryPersistencePort categoryPersistencePort;
     private final CategoryDtoMapper categoryDtoMapper;

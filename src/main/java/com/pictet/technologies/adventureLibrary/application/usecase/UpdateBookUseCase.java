@@ -3,6 +3,7 @@ package com.pictet.technologies.adventureLibrary.application.usecase;
 import com.pictet.technologies.adventureLibrary.domain.exception.NotFoundException;
 import com.pictet.technologies.adventureLibrary.domain.model.Book;
 import com.pictet.technologies.adventureLibrary.domain.model.Category;
+import com.pictet.technologies.adventureLibrary.domain.port.in.UpdateBookRestPort;
 import com.pictet.technologies.adventureLibrary.domain.port.out.BookPersistencePort;
 import com.pictet.technologies.adventureLibrary.domain.port.out.CategoryPersistencePort;
 import com.pictet.technologies.adventureLibrary.infrastructure.in.rest.dto.BookDetailsResponse;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateBookUseCase {
+public class UpdateBookUseCase implements UpdateBookRestPort {
 
     private final BookPersistencePort bookPersistencePort;
     private final CategoryPersistencePort categoryPersistencePort;
