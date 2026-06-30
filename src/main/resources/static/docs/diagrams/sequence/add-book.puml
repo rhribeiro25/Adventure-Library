@@ -1,65 +1,79 @@
 @startuml
 actor user as "Angular App"
 
-box "API Layer" #LightBlue
+box "Infrastructure Layer" #LightBlue
 participant "BookController" as controller <<(C,#ADD1B2)>>
-end box
-
-box "Application Layer" #LightGreen
-participant "AddBookUseCase" as usecase <<(C,#ADD1B2)>>
-participant "BookValidator" as validator <<(C,#ADD1B2)>>
-end box
-
-box "Persistence Layer" #LightCoral
 participant "BookPersistenceAdapter" as adapter <<(C,#ADD1B2)>>
 participant "BookRepository" as repository <<(I,#ADD1B2)>>
 end box
 
+box "Application Layer" #LightGreen
+participant "CreateBookUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "BookCreationService" as service <<(C,#ADD1B2)>>
+participant "BookValidator" as validator <<(C,#ADD1B2)>>
+end box
+
 database "PostgreSQL" as db #MediumBlue
+
+user -> controller : POST /api/v1/books\nCreateBookRequest
 
 note right user
 POST /api/v1/books
-body: {
-        "title": "The Prisoner",
-        "author": "Daniel El Fuego",
-        "difficulty": "HARD",
-        "sections": [
-          {
-            "id": 1,
-            "text": "You wake up in ...",
-            "type": "BEGIN",
-            "options": [
-              {
-                "description": "You try to open the door",
-                "gotoId": 500
-              }
-            ]
-          }
-        ]
+
+body: CreateBookRequest
+{
+   "title":"The Prisoner",
+   "author":"Daniel El Fuego",
+   "difficulty":"HARD",
+   "sections":[
+      {
+         "id":1,
+         "text":"You wake up in ...",
+         "type":"BEGIN",
+         "options":[
+            {
+               "description":"You try to open the door",
+               "gotoId":500
+            }
+         ]
       }
+   ]
+}
 end note
-user -> controller
-controller -> usecase : addBook(bookJsonRequest)
 
-usecase -> usecase : parse JSON into Book model
-usecase -> validator : validate(book)
+controller -> usecase : execute(request)
 
-group Validation rules
+usecase -> service : createBook(request)
+service -> validator : validate(book)
+
+group PDF validation rules
     validator -> validator : exactly one BEGIN
     validator -> validator : at least one END
     validator -> validator : all gotoId exist
     validator -> validator : non-END sections have options
+    validator -> validator : unique section ids
 end
 
-validator --> usecase : valid book
+validator --> service : valid book
+service --> usecase : Book
 
 usecase -> adapter : save(book)
-adapter -> repository : save(BookEntity)
-repository -> db : INSERT book, sections, options, consequences
-db --> repository : saved
-repository --> adapter : BookEntity
-adapter --> usecase : Book
 
+adapter -> repository : save(BookEntity)
+repository -> db : INSERT books
+repository -> db : INSERT categories / book_categories
+repository -> db : INSERT sections
+repository -> db : INSERT options
+repository -> db : INSERT consequences
+db --> repository : saved BookEntity
+
+repository --> adapter : Book
+adapter --> usecase : Book
 usecase --> controller : BookDetailsResponse
+
 controller --> user : 201 Created
+
 @enduml

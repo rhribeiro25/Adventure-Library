@@ -42,7 +42,7 @@ public class BookController {
     @GetMapping
     @Operation(
             summary = "Search books",
-            description = "Lists books with optional filters by title/author query, author, difficulty and category."
+            description = "Lists books with optional filters by title/author query, title, author, difficulty and category."
     )
     @ApiResponse(
             responseCode = "200",
@@ -57,6 +57,9 @@ public class BookController {
     public Page<BookSummaryResponse> searchBooks(
             @Parameter(description = "Search by title or author")
             @RequestParam(required = false) String query,
+
+            @Parameter(description = "Filter by title")
+            @RequestParam(required = false) String title,
 
             @Parameter(description = "Filter by author")
             @RequestParam(required = false) String author,
@@ -88,14 +91,15 @@ public class BookController {
 
         BookSearchFilter filter = BookSearchFilter.builder()
                 .query(query)
+                .title(title)
                 .author(author)
                 .difficulty(difficulty)
                 .category(category)
                 .build();
 
         log.info(
-                "Searching books. query={}, author={}, difficulty={}, category={}, page={}, size={}, sort={}, direction={}",
-                query, author, difficulty, category, page, safeSize, sort, sortDirection
+                "Searching books. query={}, title={}, author={}, difficulty={}, category={}, page={}, size={}, sort={}, direction={}",
+                query, author, title, difficulty, category, page, safeSize, sort, sortDirection
         );
 
         return searchBooksRestPort.execute(filter, pageable);

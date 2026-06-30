@@ -1,67 +1,92 @@
 @startuml
 actor user as "Angular App"
 
-box "API Layer" #LightBlue
+box "Infrastructure Layer" #LightBlue
 participant "GameController" as controller <<(C,#ADD1B2)>>
+participant "GamePersistenceAdapter" as gameAdapter <<(C,#ADD1B2)>>
+participant "SectionPersistenceAdapter" as sectionAdapter <<(C,#ADD1B2)>>
+participant "GameRepository" as gameRepo <<(I,#ADD1B2)>>
+participant "SectionRepository" as sectionRepo <<(I,#ADD1B2)>>
 end box
 
 box "Application Layer" #LightGreen
 participant "NavigateGameUseCase" as usecase <<(C,#ADD1B2)>>
-participant "NavigationEngine" as navigation <<(C,#ADD1B2)>>
-participant "ConsequenceEngine" as consequence <<(C,#ADD1B2)>>
 end box
 
-box "Persistence Layer" #LightCoral
-participant "GameRepository" as gameRepo <<(C,#ADD1B2)>>
-participant "SectionRepository" as sectionRepo <<(C,#ADD1B2)>>
+box "Model Layer" #Wheat
+participant "GameNavigationService" as navigation <<(C,#ADD1B2)>>
+participant "GameValidation" as gameValidation <<(C,#ADD1B2)>>
+participant "SelectedOptionValidation" as optionValidation <<(C,#ADD1B2)>>
+participant "GameConsequenceService" as consequence <<(C,#ADD1B2)>>
+participant "GameResultService" as result <<(C,#ADD1B2)>>
 end box
 
 database "PostgreSQL" as db #MediumBlue
 
-note right user
-POST /api/v1/games/{gameId}/choices
-body: { "optionId": 20 }
-end note
 user -> controller
-controller -> usecase : chooseOption(gameId, optionId)
 
-usecase -> gameRepo : findGame(gameId)
-gameRepo -> db : SELECT game
+note right user
+PATCH /api/v1/games/{gameId}/choices?optionId=20
+
+params:
+gameId: Long
+optionId: Long
+
+response: GameResponse
+end note
+
+controller -> usecase : execute(gameId, optionId)
+
+usecase -> gameAdapter : findById(gameId)
+gameAdapter -> gameRepo : findWithCurrentSectionById(gameId)
+gameRepo -> db : SELECT game, current section, options, consequences
 db --> gameRepo : GameEntity
-gameRepo --> usecase : Game
+gameRepo --> gameAdapter : GameEntity
+gameAdapter --> usecase : Game
 
-usecase -> navigation : validateSelectedOption(game, optionId)
-navigation --> usecase : Option
+usecase -> navigation : navigate(game, optionId)
 
-usecase -> consequence : apply(game, option.consequence)
-consequence -> consequence : health = health - value
-consequence --> usecase : Game with updated health
+navigation -> gameValidation : validate(game)
+gameValidation --> navigation : valid game
 
-usecase -> sectionRepo : findTargetSection(bookId, gotoId)
+navigation -> optionValidation : validate(game, optionId)
+optionValidation --> navigation : Option
+
+navigation -> optionValidation : validate(game, optionId)
+optionValidation --> navigation : Option
+
+navigation -> consequence : apply(game, option.consequence)
+consequence --> navigation : Game with updated health
+
+navigation -> sectionAdapter : nextSectionId
+sectionAdapter -> sectionRepo : findById(nextSectionId)
 sectionRepo -> db : SELECT section
 db --> sectionRepo : SectionEntity
-sectionRepo --> usecase : Section
+sectionRepo --> sectionAdapter : SectionEntity
+sectionAdapter --> navigation : Section
 
-alt health > 10
-    usecase -> gameRepo : updateStatus(gameId, WON)
-    gameRepo -> db : UPDATE game SET status=LOST, health=0
-    db --> gameRepo : updated
-    gameRepo -> usecase : Game
-    usecase --> controller : GameResponse status=WON
-else health > 0 & health < 10
-    usecase -> gameRepo : updateStatus(gameId, PLAYING)
-    gameRepo -> db : UPDATE game SET health, current_section
-    db --> gameRepo : updated
-    gameRepo -> usecase : Game
-    usecase --> controller : GameResponse status=PLAYING
-else health <= 0
-    usecase -> gameRepo : updateStatus(gameId, LOST)
-    gameRepo -> db : UPDATE game SET status=LOST, health=0
-    db --> gameRepo : updated
-    gameRepo -> usecase : Game
-    usecase --> controller : GameResponse status=LOST
+navigation -> navigation : moveToNextSection(game, section)
+
+navigation -> result : verify(game, section)
+
+alt health <= 0
+    result --> navigation : status=LOST, health=0
+else section.type == END
+    result --> navigation : status=WON
+else still playing
+    result --> navigation : status=PLAYING
 end
 
+navigation --> usecase : Game
+
+usecase -> gameAdapter : GameEntity
+gameAdapter -> gameRepo : save(GameEntity)
+gameRepo -> db : UPDATE games SET health, status, current_section_id
+db --> gameRepo : updated GameEntity
+gameRepo --> gameAdapter : GameEntity
+gameAdapter --> usecase : Game
+
+usecase --> controller : GameResponse
 controller --> user : 200 OK
 
 @enduml
