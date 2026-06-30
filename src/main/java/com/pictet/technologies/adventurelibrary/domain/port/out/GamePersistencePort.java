@@ -9,4 +9,6 @@ public interface GamePersistencePort {
     Optional<Game> findById(Long gameId);
 
     Game save(Game game);
+
+    Game update(Game game);
 }

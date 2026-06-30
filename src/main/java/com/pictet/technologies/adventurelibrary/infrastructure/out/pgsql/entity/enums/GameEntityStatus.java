@@ -3,6 +3,7 @@ package com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity
 public enum GameEntityStatus {
     PLAYING,
     PAUSED,
+    STOPPED,
     WON,
     LOST
 }

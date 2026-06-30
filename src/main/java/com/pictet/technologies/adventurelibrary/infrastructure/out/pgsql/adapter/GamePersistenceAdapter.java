@@ -30,17 +30,32 @@ public class GamePersistenceAdapter implements GamePersistencePort {
     @Override
     public Game save(Game game) {
 
-        GameEntity gameEntity = gameJpaRepository.findById(game.getId())
+        GameEntity entity = gameJpaRepository.findById(game.getId())
                 .orElseThrow(() -> new NotFoundException("Game not found: " + game.getId()));
 
         SectionEntity sectionEntity = sectionRepository.findById(game.getCurrentSection().getId())
                 .orElseThrow(() -> new NotFoundException("Section not found: " + game.getCurrentSection().getId()));
 
-        gameEntity.setCurrentSection(sectionEntity);
-        gameEntityMapper.mergeToEntity(gameEntity, game);
+        entity.setCurrentSection(sectionEntity);
+        gameEntityMapper.mergeToEntity(entity, game);
 
-        GameEntity saved = gameJpaRepository.save(gameEntity);
+        GameEntity saved = gameJpaRepository.save(entity);
         return gameEntityMapper.toDomain(saved);
+    }
+
+
+    @Override
+    public Game update(Game game) {
+        GameEntity entity = gameJpaRepository.findById(game.getId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Game with id %d not found.".formatted(game.getId())
+                ));
+
+        gameEntityMapper.mergeToEntity(entity, game);
+
+        GameEntity savedEntity = gameJpaRepository.save(entity);
+
+        return gameEntityMapper.toDomain(savedEntity);
     }
 
 }
