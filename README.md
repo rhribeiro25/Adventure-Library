@@ -98,6 +98,7 @@ http://localhost:9090/swagger-ui/index.html
 
 * POST  /api/v1/categories
 
+* GET /api/v1/games/{gameId}
 * PATCH /api/v1/games/{gameId}?status=PAUSED
 * PATCH /api/v1/games/{gameId}/choices?optionId=20
 * POST /api/v1/games/{gameId}/games
