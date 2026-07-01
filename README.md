@@ -2,7 +2,7 @@
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    💼 Challenge Overview
+    💼 Challenge Description
   </span></strong></summary>
 
 ###### Goal
