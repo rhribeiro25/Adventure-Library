@@ -56,8 +56,6 @@ public class BookEntityMapper {
             objectUtils.updateIfChanged(entity::getTitle, entity::setTitle, domain.getTitle());
         if (domain.getDifficultyLevel() != null)
             objectUtils.updateIfChanged(entity::getDifficultyLevel, entity::setDifficultyLevel, BookEntityDifficultyLevel.valueOf(domain.getDifficultyLevel().name()));
-        if (!domain.getCategories().isEmpty())
-            objectUtils.updateIfChanged(entity::getCategories, entity::setCategories, categoryEntityMapper.toEntity(domain.getCategories()));
     }
 
 }
