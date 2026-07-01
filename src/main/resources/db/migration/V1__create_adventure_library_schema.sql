@@ -16,7 +16,8 @@ CREATE TABLE books
     author           VARCHAR(255) NOT NULL,
     difficulty_level VARCHAR(20)  NOT NULL,
     created_at       TIMESTAMP,
-    updated_at       TIMESTAMP
+    updated_at       TIMESTAMP,
+    version          BIGINT       NOT NULL
 );
 
 CREATE TABLE categories
@@ -25,6 +26,7 @@ CREATE TABLE categories
     name       VARCHAR(255) NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
+    version    BIGINT       NOT NULL,
 
     CONSTRAINT uk_categories_name UNIQUE (name)
 );
