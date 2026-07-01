@@ -1,12 +1,8 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
-import com.pictet.technologies.adventurelibrary.domain.model.Game;
-import com.pictet.technologies.adventurelibrary.domain.model.enums.DifficultyLevel;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.BookEntity;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.GameEntity;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.enums.BookEntityDifficultyLevel;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.enums.GameEntityStatus;
 import com.pictet.technologies.adventurelibrary.infrastructure.shared.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -54,10 +50,14 @@ public class BookEntityMapper {
         if (entity == null || domain == null) {
             return;
         }
-        objectUtils.updateIfChanged(entity::getAuthor, entity::setAuthor, domain.getAuthor());
-        objectUtils.updateIfChanged(entity::getTitle, entity::setTitle, domain.getTitle());
-        objectUtils.updateIfChanged(entity::getDifficultyLevel, entity::setDifficultyLevel, BookEntityDifficultyLevel.valueOf(domain.getDifficultyLevel().name()));
-        objectUtils.updateIfChanged(entity::getCategories, entity::setCategories, categoryEntityMapper.toEntity(domain.getCategories()));
+        if (domain.getAuthor() != null)
+            objectUtils.updateIfChanged(entity::getAuthor, entity::setAuthor, domain.getAuthor());
+        if (domain.getTitle() != null)
+            objectUtils.updateIfChanged(entity::getTitle, entity::setTitle, domain.getTitle());
+        if (domain.getDifficultyLevel() != null)
+            objectUtils.updateIfChanged(entity::getDifficultyLevel, entity::setDifficultyLevel, BookEntityDifficultyLevel.valueOf(domain.getDifficultyLevel().name()));
+        if (!domain.getCategories().isEmpty())
+            objectUtils.updateIfChanged(entity::getCategories, entity::setCategories, categoryEntityMapper.toEntity(domain.getCategories()));
     }
 
 }
