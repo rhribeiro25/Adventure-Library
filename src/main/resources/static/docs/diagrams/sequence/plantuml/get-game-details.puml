@@ -1,0 +1,77 @@
+@startuml
+actor user as "Angular App"
+
+box "Infrastructure Layer" #LightBlue
+participant "GameController" as controller <<(C,#ADD1B2)>>
+participant "GamePersistenceAdapter" as gameAdapter <<(C,#ADD1B2)>>
+participant "BookPersistenceAdapter" as bookAdapter <<(C,#ADD1B2)>>
+participant "GameRepository" as gameRepo <<(I,#ADD1B2)>>
+participant "BookRepository" as bookRepo <<(I,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "GetGameDetailsUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
+
+user -> controller : GET /api/v1/games/{gameId}
+
+note right user
+Path parameter:
+- gameId: Long
+
+Response:
+- GameResponse
+end note
+
+controller -> usecase : execute(gameId)
+
+usecase -> gameAdapter : findDetailsById(gameId)
+
+gameAdapter -> redis : GET games::{gameId}
+
+alt Game cache hit
+    redis --> gameAdapter : Game
+else Game cache miss
+    redis --> gameAdapter : empty
+
+    gameAdapter -> gameRepo : findWithDetailsById(gameId)
+    gameRepo -> db : SELECT game,\nplayer,\nbook,\ncurrent section,\noptions,\nconsequences
+    db --> gameRepo : GameEntity
+
+    gameRepo --> gameAdapter : GameEntity
+    gameAdapter -> redis : SET games::{gameId}
+end
+
+gameAdapter --> usecase : Game / empty
+
+alt Game not found
+    usecase --> controller : NotFoundException
+    controller --> user : 404 Not Found
+else Game found
+    usecase -> bookAdapter : findDetailsById(game.book.id)
+
+    bookAdapter -> redis : GET books::{bookId}
+
+    alt Book cache hit
+        redis --> bookAdapter : Book
+    else Book cache miss
+        redis --> bookAdapter : empty
+
+        bookAdapter -> bookRepo : findById(bookId)
+        bookRepo -> db : SELECT book,\ncategories,\nsections,\noptions,\nconsequences
+        db --> bookRepo : BookEntity
+
+        bookRepo --> bookAdapter : BookEntity
+        bookAdapter -> redis : SET books::{bookId}
+    end
+
+    bookAdapter --> usecase : Book
+
+    usecase --> controller : GameResponse
+    controller --> user : 200 OK\nGameResponse
+end
+
+@enduml
