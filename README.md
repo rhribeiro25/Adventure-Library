@@ -236,6 +236,11 @@ Password: postgres
 ![Create Card – Success](src/main/resources/static/docs/diagrams/sequence/images/update-game.png)
 
 ---
+---
+###### Start Game – Success
+![Create Card – Success](src/main/resources/static/docs/diagrams/sequence/images/start-game.png)
+
+---
 </details>
 
 <details>
