@@ -182,7 +182,6 @@ docker compose up --build
 ```
 </details>
 
----
 <details>
   <summary><strong><span style="font-size: 1.1em;">
     🗄️ Accessing data
