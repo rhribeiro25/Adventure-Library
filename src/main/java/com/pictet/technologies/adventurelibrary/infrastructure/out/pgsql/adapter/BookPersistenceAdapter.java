@@ -26,6 +26,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static com.pictet.technologies.adventurelibrary.infrastructure.shared.constants.RedisConstants.BOOKS_CACHE;
@@ -100,6 +101,9 @@ public class BookPersistenceAdapter implements BookPersistencePort {
                     "Book with id %d not found.".formatted(book.getId())
             );
         }
+
+        entity.setCategories(new HashSet<>());
+
         for (Long categoryId : book.getCategories().stream().map(Category::getId).collect(Collectors.toSet())) {
             if (categoryId != null) {
                 CategoryEntity categoryEntity = categoryRepository.findById(categoryId)

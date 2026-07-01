@@ -8,6 +8,8 @@ import com.pictet.technologies.adventurelibrary.infrastructure.shared.utils.Obje
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class GameEntityMapper {
@@ -40,7 +42,7 @@ public class GameEntityMapper {
         }
 
         return GameEntity.builder()
-                .id(domain.getId())
+                .id(Optional.of(domain.getId()).orElse(null))
                 .player(playerEntityMapper.toEntity(domain.getPlayer()))
                 .health(domain.getHealth())
                 .status(GameEntityStatus.valueOf(domain.getStatus().name()))
