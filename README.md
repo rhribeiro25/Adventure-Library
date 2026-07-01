@@ -95,9 +95,12 @@ http://localhost:9090/swagger-ui/index.html
 * GET   /api/v1/books/{bookId}
 * PATCH /api/v1/books/{bookId}
 * POST  /api/v1/books
+
 * POST  /api/v1/categories
+
 * PATCH /api/v1/games/{gameId}?status=PAUSED
 * PATCH /api/v1/games/{gameId}/choices?optionId=20
+* POST /api/v1/games/{gameId}/games
 ```
 </details>
 
@@ -233,6 +236,11 @@ Password: postgres
 ![Create Card – Success](src/main/resources/static/docs/diagrams/sequence/images/update-game.png)
 
 ---
+---
+###### Start Game – Success
+![Create Card – Success](src/main/resources/static/docs/diagrams/sequence/images/start-game.png)
+
+---
 </details>
 
 <details>
@@ -242,6 +250,7 @@ Password: postgres
 
 ###### Coverage
 </details>
+
 
 #
 

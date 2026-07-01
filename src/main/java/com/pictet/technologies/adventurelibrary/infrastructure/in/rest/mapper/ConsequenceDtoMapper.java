@@ -1,7 +1,7 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Consequence;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CreateConsequenceRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.CreateConsequenceRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

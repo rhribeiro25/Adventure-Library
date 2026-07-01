@@ -1,8 +1,8 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Section;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CreateSectionRequest;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.SectionResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.CreateSectionRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.SectionResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Option;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CreateOptionRequest;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.OptionResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.CreateOptionRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.OptionResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

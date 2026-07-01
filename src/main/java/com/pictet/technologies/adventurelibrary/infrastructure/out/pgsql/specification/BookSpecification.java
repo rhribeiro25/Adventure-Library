@@ -1,6 +1,6 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.specification;
 
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookSearchFilter;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.BookSearchFilterRequest;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.BookEntity;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.CategoryEntity;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.enums.BookEntityDifficultyLevel;
@@ -14,7 +14,7 @@ public final class BookSpecification {
     }
 
     public static Specification<BookEntity> from(
-            BookSearchFilter filter,
+            BookSearchFilterRequest filter,
             BookEntityDifficultyLevel difficultyLevel
     ) {
         if (filter == null) {

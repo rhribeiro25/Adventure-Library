@@ -5,7 +5,11 @@ import com.pictet.technologies.adventurelibrary.domain.port.in.CreateBookRestPor
 import com.pictet.technologies.adventurelibrary.domain.port.in.GetBookDetailsRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.SearchBooksRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.UpdateBookRestPort;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.*;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.BookSearchFilterRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.CreateBookRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.UpdateBookRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.BookDetailsResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.BookSummaryResponse;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.pagination.BookPageableFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -89,7 +93,7 @@ public class BookController {
 
         Pageable pageable = pageableFactory.create(page, size, sort, direction);
 
-        BookSearchFilter filter = BookSearchFilter.builder()
+        BookSearchFilterRequest filter = BookSearchFilterRequest.builder()
                 .query(query)
                 .title(title)
                 .author(author)

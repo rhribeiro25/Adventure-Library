@@ -1,9 +1,9 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookDetailsResponse;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookSummaryResponse;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CreateBookRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.BookDetailsResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.BookSummaryResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.CreateBookRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

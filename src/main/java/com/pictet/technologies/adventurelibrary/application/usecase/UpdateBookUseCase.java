@@ -1,94 +1,38 @@
 package com.pictet.technologies.adventurelibrary.application.usecase;
 
-import com.pictet.technologies.adventurelibrary.domain.exception.NotFoundException;
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
 import com.pictet.technologies.adventurelibrary.domain.model.Category;
 import com.pictet.technologies.adventurelibrary.domain.port.in.UpdateBookRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.out.BookPersistencePort;
-import com.pictet.technologies.adventurelibrary.domain.port.out.CategoryPersistencePort;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.BookDetailsResponse;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.UpdateBookRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.UpdateBookRequest;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.BookDetailsResponse;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper.BookDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateBookUseCase implements UpdateBookRestPort {
 
     private final BookPersistencePort bookPersistencePort;
-    private final CategoryPersistencePort categoryPersistencePort;
     private final BookDtoMapper bookDtoMapper;
 
     @Transactional
     public BookDetailsResponse execute(Long bookId, UpdateBookRequest request) {
-        Book book = bookPersistencePort.findDetailsById(bookId)
-                .orElseThrow(() -> new NotFoundException(
-                        "Book with id %d not found.".formatted(bookId)
-                ));
+        Book book = Book.builder()
+                .id(bookId)
+                .author(request.author())
+                .title(request.title())
+                .difficultyLevel(request.difficulty())
+                .build();
+        for (Long id : request.categories()) {
+            book.getCategories().add(Category.builder().id(id).build());
+        }
 
-        applyPartialUpdates(book, request);
-
-        Book savedBook = bookPersistencePort.save(book);
+        Book savedBook = bookPersistencePort.update(book);
 
         return bookDtoMapper.toDetailsResponse(savedBook);
     }
 
-    private void applyPartialUpdates(Book book, UpdateBookRequest request) {
-        updateTitle(book, request);
-        updateAuthor(book, request);
-        updateDifficulty(book, request);
-        updateCategories(book, request);
-    }
-
-    private void updateTitle(Book book, UpdateBookRequest request) {
-        if (hasText(request.title())) {
-            book.setTitle(request.title().trim());
-        }
-    }
-
-    private void updateAuthor(Book book, UpdateBookRequest request) {
-        if (hasText(request.author())) {
-            book.setAuthor(request.author().trim());
-        }
-    }
-
-    private void updateDifficulty(Book book, UpdateBookRequest request) {
-        if (request.difficulty() != null) {
-            book.setDifficultyLevel(request.difficulty());
-        }
-    }
-
-    private void updateCategories(Book book, UpdateBookRequest request) {
-        if (request.categories() == null) {
-            return;
-        }
-
-        if (request.categories().isEmpty()) {
-            book.getCategories().clear();
-            return;
-        }
-
-        Set<Category> categories = request.categories()
-                .stream()
-                .map(this::findCategoryById)
-                .collect(Collectors.toSet());
-
-        book.setCategories(categories);
-    }
-
-    private Category findCategoryById(Long categoryId) {
-        return categoryPersistencePort.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException(
-                        "Category with id %d not found.".formatted(categoryId)
-                ));
-    }
-
-    private boolean hasText(String value) {
-        return value != null && !value.isBlank();
-    }
 }

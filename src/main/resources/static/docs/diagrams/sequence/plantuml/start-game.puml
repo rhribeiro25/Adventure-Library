@@ -1,0 +1,99 @@
+@startuml
+actor user as "Angular App"
+
+box "Infrastructure Layer" #LightBlue
+participant "GameController" as controller <<(C,#ADD1B2)>>
+participant "BookPersistenceAdapter" as bookAdapter <<(C,#ADD1B2)>>
+participant "PlayerPersistenceAdapter" as playerAdapter <<(C,#ADD1B2)>>
+participant "GamePersistenceAdapter" as gameAdapter <<(C,#ADD1B2)>>
+participant "BookRepository" as bookRepo <<(I,#ADD1B2)>>
+participant "PlayerRepository" as playerRepo <<(I,#ADD1B2)>>
+participant "GameRepository" as gameRepo <<(I,#ADD1B2)>>
+end box
+
+box "Application Layer" #LightGreen
+participant "StartGameUseCase" as usecase <<(C,#ADD1B2)>>
+end box
+
+box "Model Layer" #Wheat
+participant "GameStartService" as service <<(C,#ADD1B2)>>
+end box
+
+database "PostgreSQL" as db #MediumBlue
+database "Redis" as redis #Orange
+
+user -> controller : POST /api/v1/books/{bookId}/games
+
+note right user
+Path parameter:
+- bookId: Long
+
+body: StartGameRequest
+{
+  "playerName": "Renan",
+  "playerEmail": "renan@email.com"
+}
+
+Response:
+- GameResponse
+end note
+
+controller -> usecase : execute(bookId, request)
+
+usecase -> bookAdapter : findDetailsById(bookId)
+
+bookAdapter -> redis : GET books::{bookId}
+
+alt Book cache hit
+    redis --> bookAdapter : Book
+else Book cache miss
+    redis --> bookAdapter : empty
+
+    bookAdapter -> bookRepo : findById(bookId)
+    bookRepo -> db : SELECT book,\ncategories,\nsections,\noptions,\nconsequences
+    db --> bookRepo : BookEntity
+
+    bookRepo --> bookAdapter : BookEntity
+    bookAdapter -> redis : SET books::{bookId}
+end
+
+bookAdapter --> usecase : Book / empty
+
+alt Book not found
+    usecase --> controller : NotFoundException
+    controller --> user : 404 Not Found
+else Book found
+    usecase -> playerAdapter : findByEmailIgnoreCase(playerEmail)
+
+    playerAdapter -> playerRepo : findByEmailIgnoreCase(playerEmail)
+    playerRepo -> db : SELECT player
+    db --> playerRepo : PlayerEntity / empty
+    playerRepo --> playerAdapter : Player / empty
+    playerAdapter --> usecase : Optional<Player>
+
+    alt Player does not exist
+        usecase -> playerAdapter : save(player)
+        playerAdapter -> playerRepo : save(PlayerEntity)
+        playerRepo -> db : Save player
+        db --> playerRepo : PlayerEntity
+        playerRepo --> playerAdapter : Player
+        playerAdapter --> usecase : Player
+    end
+
+    usecase -> service : start(book, player)
+    service -> service : find BEGIN section
+    service -> service : create Game health=10,\nstatus=PLAYING,\ncurrentSection=BEGIN
+    service --> usecase : Game
+
+    usecase -> gameAdapter : save(game)
+    gameAdapter -> gameRepo : save(GameEntity)
+    gameRepo -> db : INSERT game
+    db --> gameRepo : GameEntity
+    gameRepo --> gameAdapter : Game
+    gameAdapter --> usecase : Game
+
+    usecase --> controller : GameResponse
+    controller --> user : 201 Created\nGameResponse
+end
+
+@enduml

@@ -1,7 +1,7 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper;
 
 import com.pictet.technologies.adventurelibrary.domain.model.Category;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.CategoryResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.CategoryResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

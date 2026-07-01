@@ -80,7 +80,7 @@ end
 navigation --> usecase : Game
 
 usecase -> gameAdapter : GameEntity
-gameAdapter -> gameRepo : save(GameEntity)
+gameAdapter -> gameRepo : update(GameEntity)
 gameRepo -> db : UPDATE games SET health, status, current_section_id
 db --> gameRepo : updated GameEntity
 gameRepo --> gameAdapter : GameEntity
