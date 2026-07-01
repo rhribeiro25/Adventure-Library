@@ -5,13 +5,13 @@
     💼 Challenge Overview
   </span></strong></summary>
 
-### Goal
+###### Goal
 
 Develop an interactive **Adventure Book** application using **Angular** for the frontend and **Java with Spring Boot** for the backend. The application should allow players to navigate through interactive books where each decision leads to a different section of the story. :contentReference[oaicite:0]{index=0}
 
 ---
 
-### Scenario
+###### Scenario
 
 Adventure books immerse the reader in a branching story composed of numbered sections. At the end of each section, the player chooses an option that determines the next section to read. The journey continues until the player reaches an ending or dies. :contentReference[oaicite:1]{index=1}
 
@@ -26,7 +26,7 @@ The application must allow users to:
 
 ---
 
-### Book Validation Rules
+###### Book Validation Rules
 
 A book is considered **invalid** if any of the following conditions are met:
 
@@ -37,7 +37,7 @@ A book is considered **invalid** if any of the following conditions are met:
 
 ---
 
-### Gameplay Rules
+###### Gameplay Rules
 
 - Every player starts with 10 Health Points (HP).
 - Choosing an option may trigger a consequence.
@@ -49,9 +49,9 @@ A book is considered **invalid** if any of the following conditions are met:
 
 ---
 
-### Backend Objectives (Spring Boot)
+###### Backend Objectives (Spring Boot)
 
-##### Core Features
+###### Core Features
 
 - Browse, list and search books by title, author, category and difficulty.
 - View detailed book information, including categories.
@@ -62,14 +62,14 @@ A book is considered **invalid** if any of the following conditions are met:
 - Allow players to choose among the available options to progress through the story.
 - Pause, stop and save game progression.
 
-##### Extra Features
+###### Extra Features
 
 - Support multiple players, each with their own independent game progress.
 - Add new adventure books to the collection.
 
 ---
 
-## Technical Notes
+###### Technical Notes
 
 - Objectives should be implemented in the specified order.
 - Extra objectives are evaluated only after the mandatory requirements are completed.
@@ -84,11 +84,12 @@ A book is considered **invalid** if any of the following conditions are met:
     🌐 Swagger UI
   </span></strong></summary>
 
+###### Local Swagger Access
 ```text
 http://localhost:9090/swagger-ui/index.html
 ```
 
-*RESTful APIs exposed through Swagger UI*
+###### RESTful APIs exposed through Swagger UI
 ```text
 * GET   /api/v1/books?query=&title=&author=&difficulty=&category=&page=0&size=10&sort=title&direction=asc
 * GET   /api/v1/books/{bookId}
@@ -105,6 +106,7 @@ http://localhost:9090/swagger-ui/index.html
     🏗️ My Contributions
   </span></strong></summary>
 
+######
 * Designed the application architecture following Clean Architecture principles.
 * Modeled the domain layer and implemented the core business rules.
 * Designed and implemented the REST API contracts.
@@ -124,6 +126,7 @@ http://localhost:9090/swagger-ui/index.html
     🤖 AI Support
   </span></strong></summary>
 
+######
 ```text
 1. Using this PDF interview test, suggest the initial domain model for the Adventure Book application.
 ```
@@ -161,6 +164,7 @@ http://localhost:9090/swagger-ui/index.html
     ⚙️ Setup Essentials
   </span></strong></summary>
 
+###### Tools
 - *Git*
 - *Docker 24 +*
 - *Docker Compose*
@@ -171,6 +175,7 @@ http://localhost:9090/swagger-ui/index.html
     ▶️ How to Run
   </span></strong></summary>
 
+###### Commands
 ```bash
 git clone https://github.com/rhribeiro25/Adventure-Library.git
 ```
@@ -187,7 +192,7 @@ docker compose up --build
     🗄️ Accessing data
   </span></strong></summary>
 
-*PostgreSQL Conection*
+###### PostgreSQL Conection
 ```text
 JDBC URL: jdbc:postgresql://localhost:5432/adventure-library
 Username: postgres
@@ -235,6 +240,7 @@ Password: postgres
     🧪 Testing
   </span></strong></summary>
 
+###### Coverage
 </details>
 
 #
