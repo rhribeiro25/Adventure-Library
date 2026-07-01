@@ -6,6 +6,7 @@ import com.pictet.technologies.adventurelibrary.domain.port.out.GamePersistenceP
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.GameEntity;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.SectionEntity;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.mapper.GameEntityMapper;
+import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.BookRepository;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.GameRepository;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.SectionRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import static com.pictet.technologies.adventurelibrary.infrastructure.shared.con
 public class GamePersistenceAdapter implements GamePersistencePort {
 
     private final GameRepository gameJpaRepository;
+    private final BookRepository bookRepository;
     private final GameEntityMapper gameEntityMapper;
     private final SectionRepository sectionRepository;
 
@@ -54,8 +56,9 @@ public class GamePersistenceAdapter implements GamePersistencePort {
             put = @CachePut(value = GAMES_CACHE, key = "#result.id")
     )
     public Game save(Game game) {
-        var entity = gameEntityMapper.toEntity(game);
-        var saved = gameJpaRepository.save(entity);
+        var gameEntity = gameEntityMapper.toEntity(game);
+        bookRepository.findById(game.getBook().getId()).ifPresent(gameEntity::setBook);
+        var saved = gameJpaRepository.save(gameEntity);
         return gameEntityMapper.toDomain(saved);
     }
 

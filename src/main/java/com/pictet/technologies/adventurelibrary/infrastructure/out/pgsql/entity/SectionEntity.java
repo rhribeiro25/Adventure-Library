@@ -4,7 +4,11 @@ import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,8 +19,13 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public class SectionEntity extends AbstractEntity {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EntityListeners(AuditingEntityListener.class)
+public class SectionEntity {
+
+    @Id
+    @EqualsAndHashCode.Include
+    protected Long id;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     @EqualsAndHashCode.Include
@@ -34,4 +43,12 @@ public class SectionEntity extends AbstractEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id")
     private Set<OptionEntity> options = new HashSet<>();
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column
+    private LocalDateTime updatedAt;
 }

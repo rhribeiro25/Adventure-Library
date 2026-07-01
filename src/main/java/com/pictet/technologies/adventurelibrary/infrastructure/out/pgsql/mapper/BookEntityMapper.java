@@ -41,8 +41,6 @@ public class BookEntityMapper {
                 .title(domain.getTitle())
                 .author(domain.getAuthor())
                 .difficultyLevel(difficultyLevelEntityMapper.toEntity(domain.getDifficultyLevel()))
-                .categories(categoryEntityMapper.toEntity(domain.getCategories()))
-                .sections(sectionEntityMapper.toEntity(domain.getSections()))
                 .build();
     }
 

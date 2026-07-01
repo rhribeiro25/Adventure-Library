@@ -3,15 +3,14 @@ package com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.adapte
 import com.pictet.technologies.adventurelibrary.domain.exception.NotFoundException;
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
 import com.pictet.technologies.adventurelibrary.domain.model.Category;
+import com.pictet.technologies.adventurelibrary.domain.model.Option;
+import com.pictet.technologies.adventurelibrary.domain.model.Section;
 import com.pictet.technologies.adventurelibrary.domain.port.out.BookPersistencePort;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request.BookSearchFilterRequest;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.BookEntity;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.CategoryEntity;
+import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.*;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.enums.BookEntityDifficultyLevel;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.mapper.BookEntityMapper;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.mapper.DifficultyLevelEntityMapper;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.BookRepository;
-import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.CategoryRepository;
+import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.mapper.*;
+import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.*;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.pictet.technologies.adventurelibrary.infrastructure.shared.constants.RedisConstants.BOOKS_CACHE;
@@ -38,7 +38,14 @@ public class BookPersistenceAdapter implements BookPersistencePort {
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
+    private final SectionRepository sectionRepository;
+    private final OptionRepository optionRepository;
+    private final ConsequenceRepository consequenceRepository;
+
     private final BookEntityMapper bookEntityMapper;
+    private final ConsequenceEntityMapper consequenceEntityMapper;
+    private final OptionEntityMapper optionEntityMapper;
+    private final SectionEntityMapper sectionEntityMapper;
     private final DifficultyLevelEntityMapper difficultyLevelEntityMapper;
 
     @Override
@@ -77,9 +84,22 @@ public class BookPersistenceAdapter implements BookPersistencePort {
             evict = @CacheEvict(value = BOOKS_SEARCH_CACHE, allEntries = true)
     )
     public Book save(Book book) {
-        var entity = bookEntityMapper.toEntity(book);
-        var saved = bookRepository.save(entity);
-        return bookEntityMapper.toDomain(saved);
+        BookEntity entity = bookEntityMapper.toEntity(book);
+
+        entity.setId(null);
+        entity.setCategories(new HashSet<>());
+        entity.setSections(new HashSet<>());
+
+        BookEntity savedBook = bookRepository.saveAndFlush(entity);
+
+        saveSections(book, savedBook);
+
+        BookEntity reloadedBook = bookRepository.findById(savedBook.getId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Book with id %d not found.".formatted(savedBook.getId())
+                ));
+
+        return bookEntityMapper.toDomain(reloadedBook);
     }
 
     @Override
@@ -116,5 +136,56 @@ public class BookPersistenceAdapter implements BookPersistencePort {
         bookEntityMapper.mergeToEntity(entity, book);
         var saved = bookRepository.save(entity);
         return bookEntityMapper.toDomain(saved);
+    }
+
+    private void saveSections(Book book, BookEntity savedBook) {
+        if (book.getSections() == null || book.getSections().isEmpty()) {
+            return;
+        }
+
+        book.getSections().stream()
+                .map(section -> saveSection(section, savedBook))
+                .collect(Collectors.toSet());
+    }
+
+    private SectionEntity saveSection(Section section, BookEntity savedBook) {
+        SectionEntity sectionEntity = sectionEntityMapper.toEntity(section);
+
+        sectionEntity.setBook(savedBook);
+        sectionEntity.setOptions(new HashSet<>());
+
+        SectionEntity savedSection = sectionRepository.saveAndFlush(sectionEntity);
+
+        Set<OptionEntity> savedOptions = saveOptions(section);
+        savedSection.setOptions(savedOptions);
+
+        return sectionRepository.save(savedSection);
+    }
+
+    private Set<OptionEntity> saveOptions(Section section) {
+        if (section.getOptions() == null || section.getOptions().isEmpty()) {
+            return new HashSet<>();
+        }
+
+        return section.getOptions().stream()
+                .map(this::saveOption)
+                .collect(Collectors.toSet());
+    }
+
+    private OptionEntity saveOption(Option option) {
+        OptionEntity optionEntity = optionEntityMapper.toEntity(option);
+        optionEntity.setConsequence(null);
+
+        OptionEntity savedOption = optionRepository.save(optionEntity);
+
+        if (option.getConsequence() != null) {
+            ConsequenceEntity consequenceEntity =
+                    consequenceEntityMapper.toEntity(option.getConsequence());
+
+            consequenceEntity.setOption(savedOption);
+            savedOption.setConsequence(consequenceRepository.save(consequenceEntity));
+        }
+
+        return optionRepository.save(savedOption);
     }
 }

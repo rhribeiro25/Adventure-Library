@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,5 +22,13 @@ public class SectionPersistenceAdapter implements SectionPersistencePort {
     public Optional<Section> findById(Long sectionId) {
         return sectionJpaRepository.findById(sectionId)
                 .map(sectionEntityMapper::toDomain);
+    }
+
+    @Override
+    public Set<Section> findByBookId(Long bookId) {
+        return sectionJpaRepository.findAllByBookId(bookId)
+                .stream()
+                .map(sectionEntityMapper::toDomain)
+                .collect(Collectors.toSet());
     }
 }
