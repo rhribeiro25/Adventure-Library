@@ -42,4 +42,7 @@ public class BookEntity extends AbstractEntity {
     @Builder.Default
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private Set<SectionEntity> sections = new HashSet<>();
+
+    @Version
+    private Long version;
 }

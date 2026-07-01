@@ -17,4 +17,7 @@ public class CategoryEntity extends AbstractEntity {
     @Column(nullable = false, unique = true)
     @EqualsAndHashCode.Include
     private String name;
+
+    @Version
+    private Long version;
 }
