@@ -1,6 +1,7 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.adapter;
 
 import com.pictet.technologies.adventurelibrary.domain.model.enums.GameStatus;
+import com.pictet.technologies.adventurelibrary.domain.port.in.GetGameDetailsRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.NavigateGameRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.StartGameRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.in.UpdateGameRestPort;
@@ -30,6 +31,7 @@ public class GameController {
     private final NavigateGameRestPort navigateGameRestPort;
     private final UpdateGameRestPort updateGameRestPort;
     private final StartGameRestPort startGameRestPort;
+    private final GetGameDetailsRestPort getGameDetailsRestPort;
 
     @PatchMapping("/{gameId}/choices")
     @Operation(
@@ -131,5 +133,29 @@ public class GameController {
         return ResponseEntity
                 .created(URI.create("/api/v1/games/" + response.id()))
                 .body(response);
+    }
+
+    @GetMapping("/{gameId}")
+    @Operation(
+            summary = "Get game details",
+            description = "Returns the current game state, including player, book, health, status and current section."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK",
+            content = @Content(schema = @Schema(implementation = GameResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not Found",
+            content = @Content
+    )
+    public GameResponse getGameDetails(
+            @Parameter(description = "Game id", required = true)
+            @PathVariable Long gameId) {
+
+        log.info("Getting game details. gameId={}", gameId);
+
+        return getGameDetailsRestPort.execute(gameId);
     }
 }

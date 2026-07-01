@@ -38,7 +38,7 @@ public class GamePersistenceAdapter implements GamePersistencePort {
             unless = "#result == null"
     )
     public Game findById(Long gameId) {
-        return gameJpaRepository.findWithCurrentSectionById(gameId)
+        return gameJpaRepository.findById(gameId)
                 .map(gameEntityMapper::toDomain)
                 .orElse(null);
     }

@@ -62,7 +62,9 @@ bookAdapter --> usecase : Book / empty
 alt Book not found
     usecase --> controller : NotFoundException
     controller --> user : 404 Not Found
+
 else Book found
+
     usecase -> playerAdapter : findByEmailIgnoreCase(playerEmail)
 
     playerAdapter -> playerRepo : findByEmailIgnoreCase(playerEmail)
@@ -74,26 +76,36 @@ else Book found
     alt Player does not exist
         usecase -> playerAdapter : save(player)
         playerAdapter -> playerRepo : save(PlayerEntity)
-        playerRepo -> db : Save player
+        playerRepo -> db : INSERT player
         db --> playerRepo : PlayerEntity
         playerRepo --> playerAdapter : Player
         playerAdapter --> usecase : Player
     end
 
     usecase -> service : start(book, player)
+
     service -> service : find BEGIN section
-    service -> service : create Game health=10,\nstatus=PLAYING,\ncurrentSection=BEGIN
+    service -> service : create Game\nhealth=10\nstatus=PLAYING\ncurrentSection=BEGIN
+
     service --> usecase : Game
 
     usecase -> gameAdapter : save(game)
+
     gameAdapter -> gameRepo : save(GameEntity)
     gameRepo -> db : INSERT game
     db --> gameRepo : GameEntity
+
     gameRepo --> gameAdapter : Game
+
+    gameAdapter -> redis : SET games::{gameId}
+
+    redis --> gameAdapter : cached (TTL 10 min)
+
     gameAdapter --> usecase : Game
 
     usecase --> controller : GameResponse
     controller --> user : 201 Created\nGameResponse
+
 end
 
 @enduml

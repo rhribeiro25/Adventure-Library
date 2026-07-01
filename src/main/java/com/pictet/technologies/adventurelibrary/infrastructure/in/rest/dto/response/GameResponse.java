@@ -10,6 +10,7 @@ public record GameResponse(
         Integer health,
         GameStatus status,
         Long bookId,
+        String bookTitle,
         Long currentSectionNumber
 ) {
 }
