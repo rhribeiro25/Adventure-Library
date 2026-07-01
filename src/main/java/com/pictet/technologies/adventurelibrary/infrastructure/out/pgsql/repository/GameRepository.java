@@ -9,10 +9,12 @@ import java.util.Optional;
 public interface GameRepository extends JpaRepository<GameEntity, Long> {
 
     @EntityGraph(attributePaths = {
+            "player",
             "book",
             "currentSection",
             "currentSection.options",
             "currentSection.options.consequence"
     })
-    Optional<GameEntity> findWithCurrentSectionById(Long id);
+    Optional<GameEntity> findById(Long id);
+
 }

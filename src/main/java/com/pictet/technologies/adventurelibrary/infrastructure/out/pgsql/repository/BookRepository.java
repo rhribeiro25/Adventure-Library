@@ -13,7 +13,6 @@ import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpecificationExecutor<BookEntity> {
 
-    @Override
     @EntityGraph(attributePaths = {
             "categories",
             "sections",

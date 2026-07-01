@@ -16,6 +16,7 @@ public class GameDtoMapper {
                 .health(game.getHealth())
                 .status(game.getStatus())
                 .bookId(game.getBook().getId())
+                .bookTitle(game.getBook().getTitle())
                 .currentSectionNumber(game.getCurrentSection().getId())
                 .build();
     }
