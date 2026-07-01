@@ -88,39 +88,6 @@ public class BookPersistenceAdapter implements BookPersistencePort {
             put = @CachePut(value = BOOKS_CACHE, key = "#result.id"),
             evict = @CacheEvict(value = BOOKS_SEARCH_CACHE, allEntries = true)
     )
-    public Book save(Book book) {
-        BookEntity entity = bookEntityMapper.toEntity(book);
-
-        entity.setId(null);
-        entity.setCategories(new HashSet<>());
-        entity.setSections(new HashSet<>());
-
-        BookEntity savedBook = bookRepository.saveAndFlush(entity);
-
-        saveSections(book, savedBook);
-
-        entityManager.flush();
-        entityManager.clear();
-
-        BookEntity reloadedBook = bookRepository.findById(savedBook.getId())
-                .orElseThrow(() -> new NotFoundException(
-                        "Book with id %d not found.".formatted(savedBook.getId())
-                ));
-
-        return bookEntityMapper.toDomain(reloadedBook);
-    }
-
-    @Override
-    @Transactional
-    @Retryable(
-            retryFor = OptimisticLockingFailureException.class,
-            maxAttempts = 5,
-            backoff = @Backoff(delay = 30, multiplier = 2)
-    )
-    @Caching(
-            put = @CachePut(value = BOOKS_CACHE, key = "#result.id"),
-            evict = @CacheEvict(value = BOOKS_SEARCH_CACHE, allEntries = true)
-    )
     public Book update(Book book) {
 
         BookEntity entity = bookRepository.findById(book.getId()).orElse(null);
@@ -146,14 +113,44 @@ public class BookPersistenceAdapter implements BookPersistencePort {
         return bookEntityMapper.toDomain(saved);
     }
 
-    private void saveSections(Book book, BookEntity savedBook) {
-        if (book.getSections() == null || book.getSections().isEmpty()) {
-            return;
-        }
-        book.getSections().forEach(section -> saveSection(section, savedBook, book));
+    @Override
+    @Transactional
+    @Retryable(
+            retryFor = OptimisticLockingFailureException.class,
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 30, multiplier = 2)
+    )
+    @Caching(
+            put = @CachePut(value = BOOKS_CACHE, key = "#result.id"),
+            evict = @CacheEvict(value = BOOKS_SEARCH_CACHE, allEntries = true)
+    )
+    public Book save(Book book) {
+        BookEntity entity = bookEntityMapper.toEntity(book);
+
+        entity.setId(null);
+        entity.setCategories(new HashSet<>());
+        entity.setSections(new HashSet<>());
+
+        BookEntity savedBook = bookRepository.saveAndFlush(entity);
+
+        Set<SectionEntity> savedSections = saveSections(book, savedBook);
+        savedBook.setSections(savedSections);
+
+        return bookEntityMapper.toDomain(savedBook);
     }
 
-    private void saveSection(Section section, BookEntity savedBook, Book book) {
+    private Set<SectionEntity> saveSections(Book book, BookEntity savedBook) {
+        if (book.getSections() == null || book.getSections().isEmpty()) {
+            return new HashSet<>();
+        }
+
+        return book.getSections()
+                .stream()
+                .map(section -> saveSection(section, savedBook, book))
+                .collect(Collectors.toSet());
+    }
+
+    private SectionEntity saveSection(Section section, BookEntity savedBook, Book book) {
 
         if (sectionRepository.existsById(section.getId())) {
             throw new BadRequestException(
@@ -169,7 +166,7 @@ public class BookPersistenceAdapter implements BookPersistencePort {
         Set<OptionEntity> savedOptions = saveOptions(section, book);
         savedSection.setOptions(savedOptions);
 
-        sectionRepository.save(savedSection);
+        return sectionRepository.save(savedSection);
     }
 
     private Set<OptionEntity> saveOptions(Section section, Book book) {
