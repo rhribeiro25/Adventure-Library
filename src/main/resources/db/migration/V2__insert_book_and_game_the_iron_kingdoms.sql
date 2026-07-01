@@ -26,24 +26,24 @@ DO $$
         VALUES ('iron.player@adventure.local', 'Iron Player', NOW(), NOW())
         RETURNING id INTO v_player_id;
 
-        INSERT INTO books (title, author, difficulty_level, created_at, updated_at)
-        VALUES ('The Iron Kingdoms', 'Adrian Blackwood', 'HARD', NOW(), NOW())
+        INSERT INTO books (title, author, difficulty_level, created_at, updated_at, version)
+        VALUES ('The Iron Kingdoms', 'Adrian Blackwood', 'HARD', NOW(), NOW(), 1)
         RETURNING id INTO v_book_id;
 
-        INSERT INTO categories (name, created_at, updated_at)
-        VALUES ('Fantasy', NOW(), NOW())
+        INSERT INTO categories (name, created_at, updated_at, version)
+        VALUES ('Fantasy', NOW(), NOW(), 1)
         ON CONFLICT ON CONSTRAINT uk_categories_name DO NOTHING;
 
-        INSERT INTO categories (name, created_at, updated_at)
-        VALUES ('Medieval', NOW(), NOW())
+        INSERT INTO categories (name, created_at, updated_at, version)
+        VALUES ('Medieval', NOW(), NOW(), 2)
         ON CONFLICT ON CONSTRAINT uk_categories_name DO NOTHING;
 
-        INSERT INTO categories (name, created_at, updated_at)
-        VALUES ('Political', NOW(), NOW())
+        INSERT INTO categories (name, created_at, updated_at, version)
+        VALUES ('Political', NOW(), NOW(), 3)
         ON CONFLICT ON CONSTRAINT uk_categories_name DO NOTHING;
 
-        INSERT INTO categories (name, created_at, updated_at)
-        VALUES ('Adventure', NOW(), NOW())
+        INSERT INTO categories (name, created_at, updated_at, version)
+        VALUES ('Adventure', NOW(), NOW(), 4)
         ON CONFLICT ON CONSTRAINT uk_categories_name DO NOTHING;
 
         SELECT id INTO v_category_fantasy FROM categories WHERE name = 'Fantasy';
