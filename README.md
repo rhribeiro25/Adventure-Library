@@ -81,9 +81,14 @@ A book is considered **invalid** if any of the following conditions are met:
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    🌐 RESTful APIs
+    🌐 Swagger UI
   </span></strong></summary>
 
+```text
+http://localhost:9090/swagger-ui/index.html
+```
+
+*RESTful APIs exposed through Swagger UI*
 ```text
 * GET   /api/v1/books?query=&title=&author=&difficulty=&category=&page=0&size=10&sort=title&direction=asc
 * GET   /api/v1/books/{bookId}
@@ -163,10 +168,9 @@ A book is considered **invalid** if any of the following conditions are met:
 
 <details>
   <summary><strong><span style="font-size: 1.1em;">
-    🚀 Running the Application
+    ▶️ How to Run
   </span></strong></summary>
 
-1. *Download project*
 ```bash
 git clone https://github.com/rhribeiro25/Adventure-Library.git
 ```
@@ -176,13 +180,15 @@ cd Adventure-Library
 ```bash
 docker compose up --build
 ```
+</details>
 
-2. *Swagger*
-```text
-http://localhost:9090/swagger-ui/index.html
-```
+---
+<details>
+  <summary><strong><span style="font-size: 1.1em;">
+    🗄️ Accessing data
+  </span></strong></summary>
 
-3. *PostgreSQL*
+*PostgreSQL Conection*
 ```text
 JDBC URL: jdbc:postgresql://localhost:5432/adventure-library
 Username: postgres
