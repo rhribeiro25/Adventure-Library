@@ -1,5 +1,6 @@
 package com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.adapter;
 
+import com.pictet.technologies.adventurelibrary.domain.exception.BadRequestException;
 import com.pictet.technologies.adventurelibrary.domain.exception.NotFoundException;
 import com.pictet.technologies.adventurelibrary.domain.model.Book;
 import com.pictet.technologies.adventurelibrary.domain.model.Category;
@@ -12,6 +13,7 @@ import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.entity.
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.mapper.*;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.repository.*;
 import com.pictet.technologies.adventurelibrary.infrastructure.out.pgsql.specification.BookSpecification;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,8 @@ import static com.pictet.technologies.adventurelibrary.infrastructure.shared.con
 @Component
 @RequiredArgsConstructor
 public class BookPersistenceAdapter implements BookPersistencePort {
+
+    private final EntityManager entityManager;
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
@@ -94,6 +99,9 @@ public class BookPersistenceAdapter implements BookPersistencePort {
 
         saveSections(book, savedBook);
 
+        entityManager.flush();
+        entityManager.clear();
+
         BookEntity reloadedBook = bookRepository.findById(savedBook.getId())
                 .orElseThrow(() -> new NotFoundException(
                         "Book with id %d not found.".formatted(savedBook.getId())
@@ -128,7 +136,7 @@ public class BookPersistenceAdapter implements BookPersistencePort {
             if (categoryId != null) {
                 CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new NotFoundException(
-                                "Game with id %d not found.".formatted(categoryId)
+                                "Category with id %d not found.".formatted(categoryId)
                         ));
                 entity.getCategories().add(categoryEntity);
             }
@@ -142,50 +150,69 @@ public class BookPersistenceAdapter implements BookPersistencePort {
         if (book.getSections() == null || book.getSections().isEmpty()) {
             return;
         }
-
-        book.getSections().stream()
-                .map(section -> saveSection(section, savedBook))
-                .collect(Collectors.toSet());
+        book.getSections().forEach(section -> saveSection(section, savedBook, book));
     }
 
-    private SectionEntity saveSection(Section section, BookEntity savedBook) {
-        SectionEntity sectionEntity = sectionEntityMapper.toEntity(section);
+    private void saveSection(Section section, BookEntity savedBook, Book book) {
 
+        if (sectionRepository.existsById(section.getId())) {
+            throw new BadRequestException(
+                    "Section with id %d exists already in another book.".formatted(section.getId())
+            );
+        }
+        SectionEntity sectionEntity = sectionEntityMapper.toEntity(section);
         sectionEntity.setBook(savedBook);
         sectionEntity.setOptions(new HashSet<>());
 
         SectionEntity savedSection = sectionRepository.saveAndFlush(sectionEntity);
 
-        Set<OptionEntity> savedOptions = saveOptions(section);
+        Set<OptionEntity> savedOptions = saveOptions(section, book);
         savedSection.setOptions(savedOptions);
 
-        return sectionRepository.save(savedSection);
+        sectionRepository.save(savedSection);
     }
 
-    private Set<OptionEntity> saveOptions(Section section) {
+    private Set<OptionEntity> saveOptions(Section section, Book book) {
         if (section.getOptions() == null || section.getOptions().isEmpty()) {
             return new HashSet<>();
         }
 
         return section.getOptions().stream()
-                .map(this::saveOption)
+                .map(option -> saveOption(option, book))
                 .collect(Collectors.toSet());
     }
 
-    private OptionEntity saveOption(Option option) {
+    private OptionEntity saveOption(Option option, Book book) {
+        validateNextSectionExists(option, book);
+
         OptionEntity optionEntity = optionEntityMapper.toEntity(option);
         optionEntity.setConsequence(null);
 
-        OptionEntity savedOption = optionRepository.save(optionEntity);
+        OptionEntity savedOption = optionRepository.saveAndFlush(optionEntity);
 
         if (option.getConsequence() != null) {
-            ConsequenceEntity consequenceEntity =
-                    consequenceEntityMapper.toEntity(option.getConsequence());
-
+            ConsequenceEntity consequenceEntity = consequenceEntityMapper.toEntity(option.getConsequence());
             consequenceEntity.setOption(savedOption);
-            savedOption.setConsequence(consequenceRepository.save(consequenceEntity));
+            ConsequenceEntity savedConsequence = consequenceRepository.saveAndFlush(consequenceEntity);
+            savedOption.setConsequence(savedConsequence);
         }
 
         return optionRepository.save(savedOption);
+    }
+
+    private void validateNextSectionExists(Option option, Book book) {
+        Long nextSectionId = option.getNextSectionId();
+
+        boolean existsInDatabase = sectionRepository.existsById(nextSectionId);
+
+        boolean existsInCurrentBook = book.getSections()
+                .stream()
+                .anyMatch(section -> Objects.equals(section.getId(), nextSectionId));
+
+        if (!existsInDatabase && !existsInCurrentBook) {
+            throw new BadRequestException(
+                    "Next section id %d does not exist.".formatted(nextSectionId)
+            );
+        }
     }
 }
