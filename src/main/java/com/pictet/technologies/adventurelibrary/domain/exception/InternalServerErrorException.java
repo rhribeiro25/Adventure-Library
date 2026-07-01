@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public class InternalServerErrorException extends BusinessException {
     public InternalServerErrorException() {
-        super(MessageUtils.getMessage("internal.server.error"), HttpStatus.INTERNAL_SERVER_ERROR);
+        super(MessageUtils.getMessage(MessageUtils.getMessage("error.internal")), HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 }
