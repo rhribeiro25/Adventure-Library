@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto;
+package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

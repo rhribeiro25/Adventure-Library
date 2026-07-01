@@ -6,7 +6,7 @@ import com.pictet.technologies.adventurelibrary.domain.model.enums.GameStatus;
 import com.pictet.technologies.adventurelibrary.domain.port.in.UpdateGameRestPort;
 import com.pictet.technologies.adventurelibrary.domain.port.out.GamePersistencePort;
 import com.pictet.technologies.adventurelibrary.domain.service.GameUpdateService;
-import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.GameResponse;
+import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.response.GameResponse;
 import com.pictet.technologies.adventurelibrary.infrastructure.in.rest.mapper.GameDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,10 +23,12 @@ public class UpdateGameUseCase implements UpdateGameRestPort {
     @Override
     @Transactional
     public GameResponse execute(Long gameId, GameStatus status) {
-        Game game = gamePersistencePort.findById(gameId)
-                .orElseThrow(() -> new NotFoundException(
-                        "Game with id %d not found.".formatted(gameId)
-                ));
+        Game game = gamePersistencePort.findById(gameId);
+        if (game == null) {
+            throw new NotFoundException(
+                    "Game with id %d not found.".formatted(gameId)
+            );
+        }
 
         gameUpdateService.updateStatus(game, status);
 

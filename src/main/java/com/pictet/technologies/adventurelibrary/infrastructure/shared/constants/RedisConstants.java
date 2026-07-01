@@ -8,6 +8,7 @@ public class RedisConstants {
 
     public static final String BOOKS_CACHE = "books-cache";
     public static final String BOOKS_SEARCH_CACHE = "books-search-cache";
+    public static final String GAMES_CACHE = "games-cache";
 
 
 }

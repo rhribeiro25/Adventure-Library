@@ -1,4 +1,4 @@
-package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto;
+package com.pictet.technologies.adventurelibrary.infrastructure.in.rest.dto.request;
 
 import com.pictet.technologies.adventurelibrary.domain.model.enums.DifficultyLevel;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookSearchFilter {
+public class BookSearchFilterRequest {
 
     private String query;
     private String title;
