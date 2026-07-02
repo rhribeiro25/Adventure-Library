@@ -8,8 +8,6 @@ import com.pictet.technologies.adventurelibrary.infrastructure.shared.utils.Obje
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class GameEntityMapper {
@@ -21,9 +19,7 @@ public class GameEntityMapper {
 
     public Game toDomain(GameEntity entity) {
 
-        if (entity == null) {
-            return null;
-        }
+        if (entity == null) return null;
 
         return Game.builder()
                 .id(entity.getId())
@@ -37,24 +33,21 @@ public class GameEntityMapper {
 
     public GameEntity toEntity(Game domain) {
 
-        if (domain == null) {
-            return null;
-        }
+        if (domain == null) return null;
 
         return GameEntity.builder()
-                .id(Optional.of(domain.getId()).orElse(null))
+                .id(domain.getId())
                 .player(playerEntityMapper.toEntity(domain.getPlayer()))
                 .health(domain.getHealth())
                 .status(GameEntityStatus.valueOf(domain.getStatus().name()))
-                .book(bookEntityMapper.toEntity(domain.getBook()))
                 .currentSection(sectionEntityMapper.toEntity(domain.getCurrentSection()))
                 .build();
+
     }
 
     public void mergeToEntity(GameEntity entity, Game domain) {
-        if (entity == null || domain == null) {
-            return;
-        }
+        if (entity == null || domain == null) return;
+
         objectUtils.updateIfChanged(entity::getHealth, entity::setHealth, domain.getHealth());
         objectUtils.updateIfChanged(entity::getStatus, entity::setStatus, GameEntityStatus.valueOf(domain.getStatus().name()));
     }

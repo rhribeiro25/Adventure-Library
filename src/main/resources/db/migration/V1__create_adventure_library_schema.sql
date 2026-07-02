@@ -40,18 +40,16 @@ CREATE TABLE book_categories
 
     CONSTRAINT fk_book_categories_book
         FOREIGN KEY (book_id)
-            REFERENCES books (id)
-            ON DELETE CASCADE,
+            REFERENCES books (id),
 
     CONSTRAINT fk_book_categories_category
         FOREIGN KEY (category_id)
             REFERENCES categories (id)
-            ON DELETE CASCADE
 );
 
 CREATE TABLE sections
 (
-    id         BIGSERIAL PRIMARY KEY,
+    id         BIGINT PRIMARY KEY,
     book_id    BIGINT      NOT NULL,
     text       TEXT        NOT NULL,
     type       VARCHAR(20) NOT NULL,
@@ -61,25 +59,19 @@ CREATE TABLE sections
     CONSTRAINT fk_sections_book
         FOREIGN KEY (book_id)
             REFERENCES books (id)
-            ON DELETE CASCADE
 );
 
 CREATE TABLE options
 (
     id              BIGSERIAL PRIMARY KEY,
-    section_id      BIGINT       NOT NULL,
     description     VARCHAR(255) NOT NULL,
     next_section_id BIGINT       NOT NULL,
+    section_id      BIGINT,
     created_at      TIMESTAMP,
     updated_at      TIMESTAMP,
 
     CONSTRAINT fk_options_section
         FOREIGN KEY (section_id)
-            REFERENCES sections (id)
-            ON DELETE CASCADE,
-
-    CONSTRAINT fk_options_next_section
-        FOREIGN KEY (next_section_id)
             REFERENCES sections (id)
 );
 
@@ -98,7 +90,6 @@ CREATE TABLE consequences
     CONSTRAINT fk_consequences_option
         FOREIGN KEY (option_id)
             REFERENCES options (id)
-            ON DELETE CASCADE
 );
 
 CREATE TABLE games

@@ -16,7 +16,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
     @EntityGraph(attributePaths = {
             "categories",
             "sections",
-            "sections.options"
+            "sections.options",
+            "sections.options.consequence"
     })
     Page<BookEntity> findAll(@NonNull Specification<BookEntity> specification, @NonNull Pageable pageable);
 
@@ -24,7 +25,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
     @EntityGraph(attributePaths = {
             "categories",
             "sections",
-            "sections.options"
+            "sections.options",
+            "sections.options.consequence"
     })
     Optional<BookEntity> findById(Long id);
 
